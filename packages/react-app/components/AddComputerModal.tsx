@@ -82,7 +82,7 @@ export default function AddComputerModal() {
                 <div>
                   <button
                     type="submit"
-                    className="btn-wide btn border-none bg-[#FA510F] text-white"
+                    className="btn-wide btn border-none bg-[#250438] text-white"
                   >
                     List Computer
                   </button>

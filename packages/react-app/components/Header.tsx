@@ -67,7 +67,7 @@ export default function Header() {
                       <AddComputerModal />
                       <button
                         type="button"
-                        className="inline-flex content-center place-items-center rounded-full border border-wood bg-black py-2 px-5 text-md font-medium text-snow hover:bg-forest"
+                        className="inline-flex content-center place-items-center rounded-full border-[#250438]  bg-[#250438] py-2 px-5 text-md font-medium text-snow hover:bg-[#8e24cc] "
                         onClick={disconnect}
                       >
                         {shortenAddress(address)}
@@ -76,7 +76,7 @@ export default function Header() {
                   ) : (
                     <button
                       type="button"
-                      className="inline-flex content-center place-items-center rounded-full border border-wood bg-forest py-2 px-5 text-md font-medium text-snow hover:bg-black"
+                      className="inline-flex content-center place-items-center rounded-full border border-[#250438] bg-[#250438] py-2 px-5 text-md font-medium text-snow hover:bg-[#8e24cc]"
                       onClick={() =>
                         connect().catch((e) =>
                           console.log((e as Error).message)
@@ -106,7 +106,7 @@ export default function Header() {
                       <AddComputerModal />
                       <button
                         type="button"
-                        className="inline-flex content-center place-items-center rounded-full border border-wood bg-black py-2 px-5 text-md font-medium text-snow hover:bg-forest"
+                        className="inline-flex content-center place-items-center rounded-full border-[#250438]  bg-[#250438] py-2 px-5 text-md font-medium text-snow hover:bg-[#8e24cc]"
                         onClick={disconnect}
                       >
                         {shortenAddress(address)}
@@ -115,7 +115,7 @@ export default function Header() {
                   ) : (
                     <button
                       type="button"
-                      className="inline-flex content-center place-items-center rounded-full border border-wood bg-forest py-2 px-5 text-md font-medium text-snow hover:bg-black"
+                      className="inline-flex content-center place-items-center rounded-full border border-[#250438] bg-[#250438] py-2 px-5 text-md font-medium text-snow hover:bg-[#8e24cc]"
                       onClick={() =>
                         connect().catch((e) =>
                           console.log((e as Error).message)
