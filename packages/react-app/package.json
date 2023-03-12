@@ -13,6 +13,7 @@
         "@celo/react-celo": "^4.3.0",
         "@headlessui/react": "^1.7.8",
         "@heroicons/react": "^2.0.14",
+        "daisyui": "^2.51.3",
         "ethers": "^5.7.2",
         "next": "13.1.6",
         "react": "18.2.0",

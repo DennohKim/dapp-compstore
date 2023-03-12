@@ -5,6 +5,8 @@ import {
   } from '@celo/react-celo';
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { shortenAddress } from "@/utils/shortenAddress";
+import AddComputerModal from "./AddComputerModal";
 
 export default function Header() {
 
@@ -24,7 +26,7 @@ export default function Header() {
 
 
     return (
-      <Disclosure as="nav" className="bg-prosperity border-b border-black">
+      <Disclosure as="nav" className="">
         {({ open }) => (
           <>
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -42,7 +44,13 @@ export default function Header() {
                 </div>
                 <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                   <div className="flex flex-shrink-0 items-center">
-                    <Image className="block h-8 w-auto lg:block" src="/logo.svg" width="24" height="24" alt="Celo Logo" />
+                    <Image
+                      className="block h-8 w-auto lg:block"
+                      src="/logo.svg"
+                      width="24"
+                      height="24"
+                      alt="Celo Logo"
+                    />
                   </div>
                   <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                     <a
@@ -51,30 +59,38 @@ export default function Header() {
                     >
                       Home
                     </a>
-                    
                   </div>
                 </div>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                <div className="absolute inset-y-0 right-0 hidden sm:flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                   {componentInitialized && address ? (
-                    <button
-                      type="button"
-                      className="inline-flex content-center place-items-center rounded-full border border-wood bg-black py-2 px-5 text-md font-medium text-snow hover:bg-forest"
-                      onClick={disconnect}
-                    >Disconnect</button>
+                    <div className="flex gap-4 items-center">
+                      <AddComputerModal />
+                      <button
+                        type="button"
+                        className="inline-flex content-center place-items-center rounded-full border border-wood bg-black py-2 px-5 text-md font-medium text-snow hover:bg-forest"
+                        onClick={disconnect}
+                      >
+                        {shortenAddress(address)}
+                      </button>
+                    </div>
                   ) : (
                     <button
                       type="button"
                       className="inline-flex content-center place-items-center rounded-full border border-wood bg-forest py-2 px-5 text-md font-medium text-snow hover:bg-black"
                       onClick={() =>
-                        connect().catch((e) => console.log((e as Error).message))
+                        connect().catch((e) =>
+                          console.log((e as Error).message)
+                        )
                       }
-                    >Connect</button>
+                    >
+                      Connect
+                    </button>
                   )}
                 </div>
               </div>
             </div>
-  
-            <Disclosure.Panel className="sm:hidden">
+
+            <Disclosure.Panel className="flex sm:hidden">
               <div className="space-y-1 pt-2 pb-4">
                 <Disclosure.Button
                   as="a"
@@ -84,10 +100,36 @@ export default function Header() {
                   Home
                 </Disclosure.Button>
                 {/* Add here your custom menu elements */}
+                <div className=" ">
+                  {componentInitialized && address ? (
+                    <div className="flex items-center space-x-4">
+                      <AddComputerModal />
+                      <button
+                        type="button"
+                        className="inline-flex content-center place-items-center rounded-full border border-wood bg-black py-2 px-5 text-md font-medium text-snow hover:bg-forest"
+                        onClick={disconnect}
+                      >
+                        {shortenAddress(address)}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className="inline-flex content-center place-items-center rounded-full border border-wood bg-forest py-2 px-5 text-md font-medium text-snow hover:bg-black"
+                      onClick={() =>
+                        connect().catch((e) =>
+                          console.log((e as Error).message)
+                        )
+                      }
+                    >
+                      Connect
+                    </button>
+                  )}
+                </div>
               </div>
             </Disclosure.Panel>
           </>
         )}
       </Disclosure>
-    )
+    );
   }

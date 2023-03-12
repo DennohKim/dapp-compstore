@@ -4,10 +4,11 @@ const nextConfig = {
   swcMinify: true,
   webpack: (config) => {
     config.resolve.fallback = {
-      fs: false
-    }
-    return config
-  }
-}
+      fs: false,
+    };
+    return config;
+  },
+  images: { domains: ["d3959dyu54wgqd.cloudfront.net"] },
+};
 
 module.exports = nextConfig
