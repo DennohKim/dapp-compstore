@@ -1,5 +1,10 @@
+import { MarketplaceContext } from "@/context/marketplaceContext";
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect, useRef, useContext } from "react";
+
+
+
 const products = [
   {
     id: 1,
@@ -43,7 +48,20 @@ const products = [
   },
   // More products...
 ];
+
+
 export default function Home() {
+
+const [computers, setComputers] = useState([]);
+const { getProducts } = useContext(MarketplaceContext);
+
+useEffect(() => {
+  getProducts().then((data: []) => {
+    setComputers(data);
+    console.log(data);
+  });
+}, []);
+
   return (
     <div className="bg-white rounded-lg">
       <div className="mx-auto max-w-2xl py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">

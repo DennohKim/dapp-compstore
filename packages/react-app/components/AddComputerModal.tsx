@@ -1,6 +1,45 @@
-import React from "react";
+import { MarketplaceContext } from "@/context/marketplaceContext";
+import { useCelo } from "@celo/react-celo";
+import { useState, useContext, FormEvent } from "react";
+import { ethers } from "ethers";
 
 export default function AddComputerModal() {
+  const { address, kit } = useCelo();
+
+  const { fetchContract } = useContext(MarketplaceContext);
+
+  const [title, setTitle] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [location, setLocation] = useState("");
+  const [specs, setSpecs] = useState("");
+  const [price, setPrice] = useState("");
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const provider = new ethers.providers.JsonRpcProvider(
+      "https://alfajores-forno.celo-testnet.org"
+    );
+    const contract = fetchContract(provider);
+
+    const params = [title, imageUrl, location, specs, price];
+
+    try {
+      const result = await contract
+        .writeProduct(...params)
+        
+
+      alert("Upload Successful ");
+      setTitle("");
+      setImageUrl("");
+      setLocation("");
+      setSpecs("");
+      setPrice("");
+    } catch (error) {
+      alert(error);
+    }
+  };
+
   return (
     <>
       {/* The button to open modal */}
@@ -21,7 +60,7 @@ export default function AddComputerModal() {
           >
             ✕
           </label>
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2  ">
                 <div>
@@ -30,7 +69,11 @@ export default function AddComputerModal() {
                   </label>
                   <input
                     type="text"
-                    placeholder="Type here"
+                    placeholder="Computer Title"
+                    
+                    name="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     className="input-bordered input rounded-md w-full max-w-xs"
                   />
                 </div>
@@ -40,7 +83,10 @@ export default function AddComputerModal() {
                   </label>
                   <input
                     type="text"
-                    placeholder="Type here"
+                    placeholder="Image Url"
+                    name="imageUrl"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
                     className="input-bordered input rounded-md w-full max-w-xs"
                   />
                 </div>
@@ -52,7 +98,10 @@ export default function AddComputerModal() {
                   </label>
                   <textarea
                     className="textarea-bordered rounded-md textarea h-24 w-full"
-                    placeholder="Bio"
+                    placeholder="Computer Specs"
+                    name="specs"
+                    value={specs}
+                    onChange={(e) => setSpecs(e.target.value)}
                   />
                 </div>
               </div>
@@ -63,7 +112,10 @@ export default function AddComputerModal() {
                   </label>
                   <input
                     type="text"
-                    placeholder="Type here"
+                    placeholder="Location"
+                    name="location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
                     className="input-bordered input rounded-md w-full max-w-xs"
                   />
                 </div>
@@ -73,7 +125,10 @@ export default function AddComputerModal() {
                   </label>
                   <input
                     type="text"
-                    placeholder="Type here"
+                    placeholder="Price"
+                    name="price"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
                     className="input-bordered input rounded-md w-full max-w-xs"
                   />
                 </div>
