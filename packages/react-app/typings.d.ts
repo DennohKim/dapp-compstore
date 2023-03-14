@@ -21,3 +21,17 @@ export interface Summary {
   celo: BigNumber;
   balances: { symbol: StableToken; value?: BigNumber; error?: string }[];
 }
+
+export interface Computer {
+  index: number;
+  computer_title: string;
+  image_url: string;
+  computer_specs: string;
+  store_location: string;
+  price: string;
+  // sold: number;
+}
+
+export interface CustomWindow extends Window {
+  ethereum?: any;
+}

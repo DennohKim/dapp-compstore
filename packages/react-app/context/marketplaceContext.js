@@ -54,7 +54,7 @@ export const MarketplaceProvider = ({ children }) => {
           image_url: p[2],
           computer_specs: p[3],
           store_location: p[4],
-          price: new BigNumber(p[5]),
+          price:p[5],
           sold: p[6],
         });
       });

@@ -3,28 +3,28 @@ import { useCelo } from "@celo/react-celo";
 import { useState, useContext, FormEvent } from "react";
 import { ethers } from "ethers";
 import { BigNumber } from "bignumber.js";
+import { CustomWindow } from "@/typings";
 
 
 export default function AddComputerModal() {
   const { address, kit } = useCelo();
-  const ERC20_DECIMALS = 18;
 
-  const { fetchContract } = useContext(MarketplaceContext);
+
+  const { fetchContract, getProducts } = useContext(MarketplaceContext);
 
   const [title, setTitle] = useState<string>("");
   const [imageUrl, setImageUrl] = useState<string>("");
   const [location, setLocation] = useState<string>("");
   const [specs, setSpecs] = useState<string>("");
-  const [price, setPrice] = useState<number>(0);
+  const [price, setPrice] = useState<string>("0");
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
- 
-    // const provider = new ethers.providers.JsonRpcProvider(
-    //   "https://alfajores-forno.celo-testnet.org"
-    // );
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    // creates a new instance of the Web3Provider 
+    const provider = new ethers.providers.Web3Provider(
+      (window as CustomWindow).ethereum
+    );
     await provider.send("eth_requestAccounts", []);
 
     // Create a signer using the provider
@@ -33,19 +33,17 @@ export default function AddComputerModal() {
     // Fetch the contract instance
     const contract = fetchContract(provider);
 
-    // Connect the signer to the contract   
-     const contractWithSigner = contract.connect(signer);
-     const account = await signer.getAddress();
+    // Connect the signer to the contract
+    const contractWithSigner = contract.connect(signer);
+    const account = await signer.getAddress();
 
     //Define the transaction parameters
     const params = [
       title,
       imageUrl,
-      location,
       specs,
-      ethers.BigNumber.from(price)
-        .mul(ethers.BigNumber.from(10).pow(ERC20_DECIMALS))
-        .toString(),
+      location,
+      ethers.utils.parseEther(price),
     ];
 
     try {
@@ -55,10 +53,9 @@ export default function AddComputerModal() {
       setImageUrl("");
       setLocation("");
       setSpecs("");
-      setPrice(0);
+      setPrice("0");
       alert(`🎉 You successfully added "${params[0]}".`);
-     
-      
+      await getProducts();
     } catch (error) {
       alert(`⚠️ ${error}.`);
     }
@@ -76,7 +73,7 @@ export default function AddComputerModal() {
 
       {/* Put this part before </body> tag */}
       <input type="checkbox" id="my-modal-3" className="modal-toggle" />
-      <div data-theme="cupcake" className="modal">
+      <div data-theme="cupcake" className="modal bg-gray-500/50 h-full">
         <div className="modal-box relative">
           <label
             htmlFor="my-modal-3"

@@ -146,8 +146,7 @@ export default function Header() {
               <div className="absolute inset-y-0 right-0 hidden sm:flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 {componentInitialized && address ? (
                   <div className="flex gap-4 items-center">
-                    <AddComputerModal />
-                    <p className=" text-white inline-flex content-center place-items-center rounded-full py-2 px-5 text-md font-medium bg-gray-500/30">
+                    <p className="inline-flex content-center place-items-center rounded-full py-2 px-5 text-md font-medium border-2 border-[#250438] text-[#250438]">
                       CELO BAL: {Web3.utils.fromWei(summary.celo.toFixed())}
                     </p>
 
@@ -187,7 +186,6 @@ export default function Header() {
               <div className=" ">
                 {componentInitialized && address ? (
                   <div className="flex flex-col items-start space-y-4 ml-4">
-                    <AddComputerModal />
                     <p className=" text-white inline-flex content-center place-items-center rounded-full py-2 px-5 text-md font-medium bg-gray-500/30">
                       CELO BAL: {Web3.utils.fromWei(summary.celo.toFixed())}
                     </p>

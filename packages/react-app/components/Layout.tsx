@@ -1,4 +1,5 @@
 import { FC, ReactNode } from "react";
+import AddComputerModal from "./AddComputerModal";
 import Header from "./Header";
 
 interface Props {
@@ -13,6 +14,7 @@ const Layout: FC<Props> = ({children}) => {
         >
           <Header />
           <div className="py-16 max-w-7xl mx-auto space-y-8 sm:px-6 lg:px-8">
+            <AddComputerModal />
             {children}
           </div>
         </div>
