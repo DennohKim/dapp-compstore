@@ -2,41 +2,65 @@ import { MarketplaceContext } from "@/context/marketplaceContext";
 import { useCelo } from "@celo/react-celo";
 import { useState, useContext, FormEvent } from "react";
 import { ethers } from "ethers";
+import { BigNumber } from "bignumber.js";
+
 
 export default function AddComputerModal() {
   const { address, kit } = useCelo();
+  const ERC20_DECIMALS = 18;
 
   const { fetchContract } = useContext(MarketplaceContext);
 
-  const [title, setTitle] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [location, setLocation] = useState("");
-  const [specs, setSpecs] = useState("");
-  const [price, setPrice] = useState("");
+  const [title, setTitle] = useState<string>("");
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [location, setLocation] = useState<string>("");
+  const [specs, setSpecs] = useState<string>("");
+  const [price, setPrice] = useState<number>(0);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const provider = new ethers.providers.JsonRpcProvider(
-      "https://alfajores-forno.celo-testnet.org"
-    );
+ 
+    // const provider = new ethers.providers.JsonRpcProvider(
+    //   "https://alfajores-forno.celo-testnet.org"
+    // );
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+
+    // Create a signer using the provider
+    const signer = provider.getSigner();
+
+    // Fetch the contract instance
     const contract = fetchContract(provider);
 
-    const params = [title, imageUrl, location, specs, price];
+    // Connect the signer to the contract   
+     const contractWithSigner = contract.connect(signer);
+     const account = await signer.getAddress();
+
+    //Define the transaction parameters
+    const params = [
+      title,
+      imageUrl,
+      location,
+      specs,
+      ethers.BigNumber.from(price)
+        .mul(ethers.BigNumber.from(10).pow(ERC20_DECIMALS))
+        .toString(),
+    ];
 
     try {
-      const result = await contract
-        .writeProduct(...params)
-        
-
-      alert("Upload Successful ");
+      const tx = await contractWithSigner.writeProduct(...params);
+      await tx.wait();
       setTitle("");
       setImageUrl("");
       setLocation("");
       setSpecs("");
-      setPrice("");
+      setPrice(0);
+      alert(`🎉 You successfully added "${params[0]}".`);
+     
+      
     } catch (error) {
-      alert(error);
+      alert(`⚠️ ${error}.`);
     }
   };
 
