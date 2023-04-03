@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+
 export interface computerAbi {
   inputs: {
     internalType: string;
@@ -23,13 +25,14 @@ export interface Summary {
 }
 
 export interface Computer {
+  owner: string;
   index: number;
   computer_title: string;
   image_url: string;
   computer_specs: string;
   store_location: string;
-  price: string;
-  // sold: number;
+  price: BigNumber;
+  sold: BigNumber;
 }
 
 export interface CustomWindow extends Window {

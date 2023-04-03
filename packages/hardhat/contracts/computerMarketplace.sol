@@ -19,7 +19,8 @@ interface IERC20Token {
 contract ComputerMarketplace {  
     
     uint internal productsLength = 0;
-    address internal cUsdTokenAddress = 0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1;
+    // address internal cUsdTokenAddress = 0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1;
+     address internal celoTokenAddress = 0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9;
     
     struct Product {
         address payable owner;
@@ -75,7 +76,7 @@ contract ComputerMarketplace {
 
     function buyProduct(uint _index) public payable  {
 		require(
-		  IERC20Token(cUsdTokenAddress).transferFrom(
+		  IERC20Token(celoTokenAddress).transferFrom(
 			msg.sender,
 			products[_index].owner,
 			products[_index].price

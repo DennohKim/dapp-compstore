@@ -1,4 +1,5 @@
 import AddComputerModal from "@/components/AddComputerModal";
+import CheckoutModal from "@/components/CheckoutModal";
 import { MarketplaceContext } from "@/context/marketplaceContext";
 import { Computer } from "@/typings";
 import { ethers } from "ethers";
@@ -29,11 +30,8 @@ useEffect(() => {
 
         <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
           {computers.map((computer: Computer) => (
-            <Link
-              href={{ pathname: "/computerDetails", query: computer }}
-              key={computer.index}
-            >
-              <div className="group">
+           
+              <div className="group flex flex-col space-y-6" key={computer.index}>
                 <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-w-7 xl:aspect-h-8">
                   <Image
                     width={300}
@@ -49,12 +47,11 @@ useEffect(() => {
                     {computer.computer_title.substring(0, 28)}...
                   </h3>
                 </div>
-
-                <p className="mt-1 font-medium text-gray-900">
-                  {ethers.utils.formatEther(computer.price)} CELO
-                </p>
+                <div>
+                  <CheckoutModal computer={computer} />
+                </div>
               </div>
-            </Link>
+            
           ))}
         </div>
       </div>

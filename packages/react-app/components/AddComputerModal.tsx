@@ -7,8 +7,7 @@ import { CustomWindow } from "@/typings";
 
 
 export default function AddComputerModal() {
-  const { address, kit } = useCelo();
-
+  
 
   const { fetchContract, getProducts } = useContext(MarketplaceContext);
 

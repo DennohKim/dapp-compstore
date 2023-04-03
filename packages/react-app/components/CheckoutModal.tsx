@@ -1,29 +1,87 @@
-import React from 'react'
+import { ethers } from "ethers";
+import { Computer } from "@/typings";
+import Image from "next/image";
+import { IoIosPin } from "react-icons/io";
+import { shortenAddress } from "@/utils/shortenAddress";
+import { BigNumber } from "ethers";
+import { useContext } from "react";
+import { MarketplaceContext } from "@/context/marketplaceContext";
 
-export default function CheckoutModal() {
+
+export default function CheckoutModal({ computer }: { computer: Computer }) {
+  const {  handleClick } = useContext(MarketplaceContext);
+
+
+   
   return (
     <>
-      {/* The button to open modal */}
       <label
-        htmlFor="my-modal-4"
-        className="cursor-pointer rounded-full border-2 border-gray-800 text-gray-800 px-3 py-2"
+        htmlFor="my-modal-5"
+        className="border-2 rounded-full px-8 py-3 mt-4 font-medium cursor-pointer text-gray-900"
       >
-        List a Computer
+        Buy for {ethers.utils.formatEther(computer.price)} CELO
       </label>
 
       {/* Put this part before </body> tag */}
-      <input type="checkbox" id="my-modal-4" className="modal-toggle" />
-      <label htmlFor="my-modal-4" className="modal cursor-pointer">
-        <label className="modal-box relative" htmlFor="">
-          <h3 className="text-lg font-bold">
-            Congratulations random Internet user!
-          </h3>
-          <p className="py-4">
-            been selected for a chance to get one year of subscription to use
-            Wikipedia for free!
-          </p>
-        </label>
-      </label>
+      <input type="checkbox" id="my-modal-5" className="modal-toggle" />
+      <div className="modal">
+        <div className="modal-box w-11/12 max-w-5xl">
+          <div className="grid grid-cols-1 px- gap-y-10 gap-x-6 sm:grid-cols-2 ">
+            <div className="group aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-w-7 xl:aspect-h-8">
+              <Image
+                width={600}
+                height={600}
+                src={computer.image_url}
+                alt="computer"
+                className="object-center group-hover:opacity-75 object-cover transform transition-all h-full w-full hover:scale-110 "
+              />
+            </div>
+            <div>
+              <p className="pb-2">
+                Owner:{" "}
+                <span className="font-semibold">
+                  {shortenAddress(computer.owner)}
+                </span>
+              </p>
+              <div className="pb-2 flex items-center">
+                <div className="flex items-center space-x-2">
+                  <IoIosPin /> <p>Store Location: </p>
+                </div>
+                <div className="font-semibold"> {computer.store_location}</div>
+              </div>
+              <h1 className="text-2xl font-bold pb-10">
+                {computer.computer_title}
+              </h1>
+              <h2 className="text-xl font-semibold pb-4">
+                Computer Specifications
+              </h2>
+              <div>
+                {computer.computer_specs.split(",").map((specs: string) => {
+                  return <p key={specs}>&#8226; {specs.trim()}</p>;
+                })}
+              </div>
+              <div className="pt-10">
+                Price:{" "}
+                {ethers.utils.formatEther(BigNumber.from(computer.price)) +
+                  " CELO"}
+              </div>
+            </div>
+          </div>
+          <div className="modal-action flex items-center">
+            <button
+              className="border-2 border-gray-900 rounded-full px-8 py-3 font-medium cursor-pointer text-gray-900 buyBtn"
+              onClick={handleClick}
+              data-index={computer.index}
+            >
+              Buy Computer
+            </button>
+
+            <label htmlFor="my-modal-5" className="btn">
+              close
+            </label>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
