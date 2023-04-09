@@ -62,7 +62,19 @@ export const MarketplaceProvider = ({ children }) => {
 
   //define constants
  
- 
+ const getsigner = async()=>{
+  if (!window.ethereum) {
+    alert("Please install MetaMask to use this feature.");
+    return;
+  }
+
+  await window.ethereum.enable();
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  return signer;
+
+ }
+
 
   //define functions
   async function approvePrice(price) {
@@ -90,13 +102,19 @@ export const MarketplaceProvider = ({ children }) => {
   }
 
   async function buyProduct(index, price) {
+    const signer = await getsigner();
+    const contract = new ethers.Contract(
+      ComputerMarketplaceContract,
+      ComputerMarketplaceAbi,
+      signer
+    );
 
-     const contract = fetchContract(provider);
+    //  const contract = fetchContract(provider);
 
     try {
-      const tx = await contract.buyProduct(index, {
-        value: ethers.utils.formatEther(price.toString()),
-      });
+      
+     
+      const tx = await contract.buyProduct(index);
       await tx.wait();
       return true;
     } catch (error) {
