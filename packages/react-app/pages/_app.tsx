@@ -5,6 +5,7 @@ import '@celo/react-celo/lib/styles.css';
 
 import Layout from "../components/Layout";
 import { MarketplaceProvider } from "@/context/marketplaceContext";
+import { ShoppingCartProvider } from "@/context/ShoppingCartContext";
 
 function App({ Component, pageProps }: AppProps) {
   return (
@@ -21,9 +22,11 @@ function App({ Component, pageProps }: AppProps) {
       }}
     >
       <MarketplaceProvider>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <ShoppingCartProvider>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </ShoppingCartProvider>
       </MarketplaceProvider>
     </CeloProvider>
   );

@@ -20,7 +20,7 @@ const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1";
 const celoContractAddress = "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9";
 
 export const MarketplaceProvider = ({ children }) => {
-  const { address } = useCelo();
+  
 
   const fetchContract = (signerOrProvider) =>
     new ethers.Contract(

@@ -3,11 +3,8 @@ import CheckoutModal from "@/components/CheckoutModal";
 import ComputerCard from "@/components/ComputerCard";
 import { MarketplaceContext } from "@/context/marketplaceContext";
 import { Computer } from "@/typings";
-import { ethers } from "ethers";
-import Image from "next/image";
-import Link from "next/link";
 import { useState, useEffect, useRef, useContext } from "react";
-import { IoIosPin } from "react-icons/io";
+
 
 
 

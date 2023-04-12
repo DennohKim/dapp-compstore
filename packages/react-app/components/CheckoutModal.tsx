@@ -23,9 +23,9 @@ export default function CheckoutModal({ computer }: { computer: Computer }) {
     <>
       <label
         htmlFor="my-modal-5"
-        className="border-2 rounded-full px-8 py-3 mt-4 font-medium cursor-pointer text-gray-900"
+        className="font-bold cursor-pointer text-gray-900"
       >
-        Buy for {ethers.utils.formatEther(computer.price)} CELO
+        {ethers.utils.formatEther(computer.price)} CELO
       </label>
 
       {/* Put this part before </body> tag */}
