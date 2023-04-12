@@ -8,11 +8,17 @@ import { useContext } from "react";
 import { MarketplaceContext } from "@/context/marketplaceContext";
 
 
+
 export default function CheckoutModal({ computer }: { computer: Computer }) {
-  const {  handleClick } = useContext(MarketplaceContext);
+  const { handleClick } = useContext(MarketplaceContext);
 
+  const value = ethers.utils.formatEther(computer.sold);
 
-   
+  const etherNumber = parseFloat(value);
+
+  //convert to whole number
+  const itemsSold = Math.round(etherNumber * 1e18); 
+  
   return (
     <>
       <label
@@ -37,15 +43,24 @@ export default function CheckoutModal({ computer }: { computer: Computer }) {
               />
             </div>
             <div>
-              <p className="pb-2">
-                Owner:{" "}
-                <span className="font-semibold">
-                  {shortenAddress(computer.owner)}
-                </span>
-              </p>
+              <div className="flex space-x-3">
+                <p className="pb-2">
+                  Owner:{" "}
+                  <span className="font-semibold">
+                    {shortenAddress(computer.owner)}
+                  </span>
+                </p>
+                <p className="pb-2">
+                  Items Sold:{" "}
+                  <span className="font-semibold">
+                    {itemsSold}
+                  </span>
+                </p>
+              </div>
+
               <div className="pb-2 flex items-center">
                 <div className="flex items-center space-x-2">
-                  <IoIosPin /> <p>Store Location: </p>
+                  <IoIosPin /> <p className="pr-2">Store Location: </p>
                 </div>
                 <div className="font-semibold"> {computer.store_location}</div>
               </div>

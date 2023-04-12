@@ -128,10 +128,10 @@ export default function Header() {
                 <div className="flex flex-shrink-0 items-center">
                   <Image
                     className="block h-8 w-auto lg:block"
-                    src="/logo.svg"
+                    src="/mafraq.svg"
                     width="24"
                     height="24"
-                    alt="Celo Logo"
+                    alt="Logo"
                   />
                 </div>
                 <div className="hidden sm:ml-6 sm:flex sm:space-x-8">

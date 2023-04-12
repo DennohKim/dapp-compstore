@@ -109,11 +109,8 @@ export const MarketplaceProvider = ({ children }) => {
       signer
     );
 
-    //  const contract = fetchContract(provider);
 
     try {
-      
-     
       const tx = await contract.buyProduct(index);
       await tx.wait();
       return true;
@@ -169,101 +166,6 @@ export const MarketplaceProvider = ({ children }) => {
     }
   }
 
-  // ----------------------------------------------------------------------------------------------
-  // async function approvePrice(price) {
-  //      await window.ethereum.enable();
-  //      const provider = new ethers.providers.Web3Provider(window.ethereum);
-  //      const signer = provider.getSigner();
-  //      const celoContract = new ethers.Contract(
-  //        celoContractAddress,
-  //        erc20Abi,
-  //        signer
-  //      );
-  //      const result = await celoContract.approve(
-  //        ComputerMarketplaceContract, price,
-  //        {
-  //          from: await signer.getAddress(),
-  //        }
-  //      );
-  //      return result;
-  // }
-
-  // const handleClick = async (e) => {
-  //   if (e.target.className.includes("buyBtn")) {
-  //     console.log(e.target.id);
-  //     const index = e.target.getAttribute("data-index");
-  //     const provider = new ethers.providers.Web3Provider(window.ethereum);
-  //     const signer = provider.getSigner();
-  //     const contract = fetchContract(provider);
-
-  //     const celoContract = new ethers.Contract(
-  //       celoContractAddress,
-  //       erc20Abi,
-  //       signer
-  //     );
-
-  //     alert(`⌛ Waiting for payment approval...`);
-  //     try {
-  //       console.log(products[index]);
-  //       await approvePrice(products[index].price);
-  //     } catch (error) {
-  //       alert(`⚠️ Approval failed: ${error}.`);
-  //     }
-
-  //     alert(`⌛ Awaiting payment for "${products[index].computer_title}"...`);
-  //     try {
-  //       const tx = await contract.buyProduct(index, {
-  //         value: ethers.utils.parseEther(products[index].price.toString()),
-  //         from: await signer.getAddress(),
-  //       });
-  //       await tx.wait();
-  //       alert(
-  //         `🎉 You successfully bought "${products[index].computer_title}".`
-  //       );
-  //       getProducts();
-  //     } catch (error) {
-  //       alert(`⚠️ Transaction failed: ${error}.`);
-  //     }
-  //   }
-  // };
-
-  // ----------------------------------------------------------------------------------------------
-
-
-  // const handleClick = async (e) => {
-  //   if (e.target.classList.contains("buyBtn")) {
-  //     console.log("buyBtn Clicked");
-  //     const index = e.target.getAttribute("data-index");
-  //     alert("⌛ Waiting for payment approval...");
-  //     try {
-  //       await approvePrice(products[index].price);
-  //     } catch (error) {
-  //       alert(`⚠️ ${error}.`);
-  //     }
-  //     alert(
-  //       `⌛ Awaiting payment for "${products[index].computer_title}"...`
-  //     );
-  //     try {
-
-  //       const provider = new ethers.providers.Web3Provider(window.ethereum);
-  //        const contract = fetchContract(provider);
-  //       const signer = provider.getSigner();
-  //       const contractWithSigner = contract.connect(signer);
-  //       const tx = await contractWithSigner.buyProduct(index, {
-  //         value: ethers.utils.parseEther(products[index].price.toString()),
-  //       });
-  //       await tx.wait();
-  //       alert(
-  //         `🎉 You successfully bought "${products[index].computer_title}".`
-  //       );
-  //       // update products and balance
-  //       getProducts();
-
-  //     } catch (error) {
-  //       alert(`⚠️ ${error}.`);
-  //     }
-  //   }
-  // };
 
   return (
     <MarketplaceContext.Provider
