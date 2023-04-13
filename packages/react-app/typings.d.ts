@@ -17,12 +17,7 @@ export interface computerAbi {
   [];
 }
 
-export interface Summary {
-  name: string;
-  address: string;
-  celo: BigNumber;
-  balances: { symbol: StableToken; value?: BigNumber; error?: string }[];
-}
+
 
 export interface Computer {
   owner: string;

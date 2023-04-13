@@ -5,14 +5,17 @@ import Image from "next/image";
 import { useEffect, useState, useContext, useCallback } from "react";
 import { BigNumber } from "bignumber.js";
 import { shortenAddress } from "@/utils/shortenAddress";
-import { Summary } from "@/typings";
 import { StableToken } from "@celo/contractkit/lib/celo-tokens";
 import { StableTokenWrapper } from "@celo/contractkit/lib/wrappers/StableTokenWrapper";
 import Web3 from "web3";
 import CheckoutModal from "./CheckoutModal";
 
-
-export default function Header() {
+export interface Summary {
+  name: string;
+  address: string;
+  celo: BigNumber;
+  balances: { symbol: StableToken; value?: BigNumber; error?: string }[];
+}
 
   const defaultSummary: Summary = {
     name: "",
@@ -21,86 +24,94 @@ export default function Header() {
     balances: [],
   };
 
-  const [summary, setSummary] = useState<Summary>(defaultSummary);
+export default function Header() {
 
-  let [componentInitialized, setComponentInitialized] = useState(false);
-  let { initialised, address, connect, disconnect, kit } = useCelo();
 
-  async function getBalances(
-    stableTokens: {
-      symbol: StableToken;
-      contract: StableTokenWrapper | null;
-    }[],
-    address: string
-  ) {
-    return Promise.all(
-      stableTokens.map(async (stable) => {
-        let value, error;
-        if (stable.contract) {
-          value = await stable.contract.balanceOf(address);
-        } else {
-          error = "not deployed in network";
-        }
-        return {
-          symbol: stable.symbol,
-          value: value,
-          error: error,
-        };
-      })
-    );
-  }
 
-  const fetchSummary = useCallback(async () => {
-    if (!address) {
-      setSummary(defaultSummary);
-      return;
-    }
+ const {
+   kit,
+   address,
+   disconnect,
+   connect
+  
+ } = useCelo();
 
-    const [accounts, goldToken, stableTokens] = await Promise.all([
-      kit.contracts.getAccounts(),
-      kit.contracts.getGoldToken(),
-      Promise.all(
-        Object.values(StableToken).map(async (stable) => {
-          let contract;
-          try {
-            contract = await kit.contracts.getStableToken(stable);
-          } catch (e) {
-            contract = null;
-            console.error(e);
+
+ const [summary, setSummary] = useState(defaultSummary);
+
+
+ const fetchSummary = useCallback(async () => {
+   if (!address) {
+     setSummary(defaultSummary);
+     return;
+   }
+
+   const [accounts, goldToken, stableTokens] = await Promise.all([
+     kit.contracts.getAccounts(),
+     kit.contracts.getGoldToken(),
+     Promise.all(
+       Object.values(StableToken).map(async (stable) => {
+         let contract;
+         try {
+           contract = await kit.contracts.getStableToken(stable);
+         } catch (e) {
+           contract = null;
+           console.error(e);
+         }
+         return {
+           symbol: stable,
+           contract: contract,
+         };
+       })
+     ),
+   ]);
+
+    async function getBalances(
+      stableTokens: {
+        symbol: StableToken;
+        contract: StableTokenWrapper | null;
+      }[],
+      address: string
+    ) {
+      return Promise.all(
+        stableTokens.map(async (stable) => {
+          let value, error;
+          if (stable.contract) {
+            value = await stable.contract.balanceOf(address);
+          } else {
+            error = "not deployed in network";
           }
           return {
-            symbol: stable,
-            contract: contract,
+            symbol: stable.symbol,
+            value: value,
+            error: error,
           };
         })
-      ),
-    ]);
+      );
+    }
 
-    const [accountSummary, celo, balances] = await Promise.all([
-      accounts.getAccountSummary(address).catch((e) => {
-        console.error(e);
-        return defaultSummary;
-      }),
-      goldToken.balanceOf(address),
-      getBalances(stableTokens, address),
-    ]);
 
-    setSummary({
-      ...accountSummary,
-      celo,
-      balances,
-    });
-  }, []);
+   const [accountSummary, celo, balances] = await Promise.all([
+     accounts.getAccountSummary(address).catch((e) => {
+       console.error(e);
+       return defaultSummary;
+     }),
+     goldToken.balanceOf(address),
+     getBalances(stableTokens, address),
+   ]);
+
+   setSummary({
+     ...accountSummary,
+     celo,
+     balances,
+   });
+ }, [address, kit]);
 
   useEffect(() => {
     void fetchSummary();
   }, [fetchSummary]);
 
-  useEffect(() => {
-    if (initialised) {
-      setComponentInitialized(true);
-    }
-  }, [initialised]);
+ 
 
   return (
     <Disclosure as="nav" className="">
@@ -139,7 +150,7 @@ export default function Header() {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 hidden sm:flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                {componentInitialized && address ? (
+                {address ? (
                   <div className="flex gap-4 items-center">
                     <div>
                       <CheckoutModal />
@@ -183,7 +194,7 @@ export default function Header() {
               </Disclosure.Button>
               {/* Add here your custom menu elements */}
               <div className=" ">
-                {componentInitialized && address ? (
+                {address ? (
                   <div className="flex flex-col items-start space-y-4 ml-4">
                     <div>
                       <CheckoutModal />
