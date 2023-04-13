@@ -72,7 +72,7 @@ export default function AddComputerModal() {
 
       {/* Put this part before </body> tag */}
       <input type="checkbox" id="my-modal-3" className="modal-toggle" />
-      <div data-theme="cupcake" className="modal bg-gray-500/50 h-full">
+      <div className="modal bg-gray-500/50 h-full">
         <div className="modal-box relative">
           <label
             htmlFor="my-modal-3"

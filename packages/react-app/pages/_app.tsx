@@ -3,6 +3,8 @@ import type { AppProps } from "next/app";
 import { CeloProvider, Alfajores } from '@celo/react-celo';
 import '@celo/react-celo/lib/styles.css';
 
+
+
 import Layout from "../components/Layout";
 import { MarketplaceProvider } from "@/context/marketplaceContext";
 import { ShoppingCartProvider } from "@/context/ShoppingCartContext";

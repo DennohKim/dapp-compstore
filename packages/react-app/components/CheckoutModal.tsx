@@ -1,102 +1,108 @@
-import { ethers } from "ethers";
-import { Computer } from "@/typings";
-import Image from "next/image";
-import { IoIosPin } from "react-icons/io";
-import { shortenAddress } from "@/utils/shortenAddress";
-import { BigNumber } from "ethers";
-import { useContext } from "react";
 import { MarketplaceContext } from "@/context/marketplaceContext";
+import { useShoppingCart } from "@/context/ShoppingCartContext";
+import { Dialog, Transition } from "@headlessui/react";
+import { ethers } from "ethers";
+import { Fragment, useContext, useState } from "react";
+import { HiShoppingCart } from "react-icons/hi";
+import { CartItem } from "./CartItem";
 
-
-
-export default function CheckoutModal({ computer }: { computer: Computer }) {
-  const { handleClick } = useContext(MarketplaceContext);
-
-  const value = ethers.utils.formatEther(computer.sold);
-
-  const etherNumber = parseFloat(value);
-
-  //convert to whole number
-  const itemsSold = Math.round(etherNumber * 1e18); 
+export default function TestModal() {
+  const { cartItems, cartQuantity } = useShoppingCart();
   
+  const { computers } = useContext(MarketplaceContext);
+
+  let [isOpen, setIsOpen] = useState(false);
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
   return (
     <>
-      <label
-        htmlFor="my-modal-5"
-        className="font-bold cursor-pointer text-gray-900"
-      >
-        {ethers.utils.formatEther(computer.price)} CELO
-      </label>
-
-      {/* Put this part before </body> tag */}
-      <input type="checkbox" id="my-modal-5" className="modal-toggle" />
-      <div className="modal">
-        <div className="modal-box w-11/12 max-w-5xl">
-          <div className="grid grid-cols-1 px- gap-y-10 gap-x-6 sm:grid-cols-2 ">
-            <div className="group aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-w-7 xl:aspect-h-8">
-              <Image
-                width={600}
-                height={600}
-                src={computer.image_url}
-                alt="computer"
-                className="object-center group-hover:opacity-75 object-cover transform transition-all h-full w-full hover:scale-110 "
-              />
-            </div>
-            <div>
-              <div className="flex space-x-3">
-                <p className="pb-2">
-                  Owner:{" "}
-                  <span className="font-semibold">
-                    {shortenAddress(computer.owner)}
-                  </span>
-                </p>
-                <p className="pb-2">
-                  Items Sold:{" "}
-                  <span className="font-semibold">
-                    {itemsSold}
-                  </span>
-                </p>
-              </div>
-
-              <div className="pb-2 flex items-center">
-                <div className="flex items-center space-x-2">
-                  <IoIosPin /> <p className="pr-2">Store Location: </p>
-                </div>
-                <div className="font-semibold"> {computer.store_location}</div>
-              </div>
-              <h1 className="text-2xl font-bold pb-10">
-                {computer.computer_title}
-              </h1>
-              <h2 className="text-xl font-semibold pb-4">
-                Computer Specifications
-              </h2>
-              <div>
-                {computer.computer_specs.split(",").map((specs: string) => {
-                  return <p key={specs}>&#8226; {specs.trim()}</p>;
-                })}
-              </div>
-              <div className="pt-10">
-                Price:{" "}
-                {ethers.utils.formatEther(BigNumber.from(computer.price)) +
-                  " CELO"}
-              </div>
-            </div>
+      <div className=" inset-0 flex items-center justify-center">
+        <button
+          onClick={openModal}
+          className="relative flex justify-center items-center text-xl text-purple-900 rounded-full  h-12 w-12 border border-purple-900"
+        >
+          <HiShoppingCart />
+          <div className="absolute  h-6 w-6 top-8 left-6 rounded-full bg-rose-700 flex justify-center items-center text-white text-sm">
+            {cartQuantity}
           </div>
-          <div className="modal-action flex items-center">
-            <button
-              className="border-2 border-gray-900 rounded-full px-8 py-3 font-medium cursor-pointer text-gray-900 buyBtn"
-              onClick={handleClick}
-              data-index={computer.index}
-            >
-              Buy Computer
-            </button>
-
-            <label htmlFor="my-modal-5" className="btn">
-              close
-            </label>
-          </div>
-        </div>
+        </button>
       </div>
+
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={closeModal}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900"
+                  >
+                    Cart
+                  </Dialog.Title>
+                  <div className="mt-2">
+                    {cartItems.map((item) => (
+                      <CartItem key={item.id} {...item} />
+                    ))}
+                    <div className="ml-auto font-bold text-black text-md mt-4 ">
+                      Total{" "}
+                      {cartItems.reduce((total, cartItem) => {
+                        const item = computers.find(
+                          (i: any) => i.index === cartItem.id
+                        );
+                        const itemPrice = item
+                          ? ethers.utils.formatEther(item.price)
+                          : "0";
+                        return (
+                          total + parseFloat(itemPrice) * cartItem.quantity
+                        );
+                      }, 0)}
+                      <span className="pl-2">CELO</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      className="btn inline-flex justify-end rounded-md border border-transparent bg-rose-100 px-4 py-2 text-sm font-medium text-rose-900 hover:bg-rose-200"
+                      onClick={closeModal}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
     </>
   );
 }

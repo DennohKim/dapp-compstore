@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import Image from 'next/image';
 import React from 'react'
 import { IoIosPin } from 'react-icons/io';
-import CheckoutModal from './CheckoutModal';
+import CheckoutModal from './DetailsModal';
 
 const ComputerCard = ({computer}: {computer: Computer}) => {
   const {
@@ -17,7 +17,7 @@ const ComputerCard = ({computer}: {computer: Computer}) => {
 
  
   return (
-    <div className="group flex flex-col space-y-6">
+    <div  className="group flex flex-col space-y-6">
       <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-w-7 xl:aspect-h-8">
         <Image
           width={300}
@@ -39,31 +39,45 @@ const ComputerCard = ({computer}: {computer: Computer}) => {
             </div>
             <p className="text-sm"> {computer.store_location}</p>
           </div>
-          <div className='font-bold'>{ethers.utils.formatEther(computer.price)} CELO</div>
+          <div className="font-bold">
+            {ethers.utils.formatEther(computer.price)} CELO
+          </div>
         </div>
         <div className="mt-2">
           {quantity === 0 ? (
-            <button onClick={() => increaseCartQuantity(computer.index)} className="w-full rounded-md py-2 px-4 text-white bg-purple-900">
+            <button
+              onClick={() => increaseCartQuantity(computer.index)}
+              className="w-full rounded-md py-2 px-4 text-white bg-purple-900"
+            >
               {" "}
               + Add to Cart
             </button>
           ) : (
             <div className="flex flex-col items-center  gap-2">
               <div className="flex items-center  gap-2">
-                <button onClick={() => decreaseCartQuantity(computer.index)} className="rounded-md py-2 px-4 text-white bg-purple-900">
+                <button
+                  onClick={() => decreaseCartQuantity(computer.index)}
+                  className="rounded-md py-2 px-4 text-white bg-purple-900"
+                >
                   -
                 </button>
                 <div>
                   <span className="text-gray-700 font-bold">{quantity} </span>in
                   cart
                 </div>
-                <button onClick={() => increaseCartQuantity(computer.index)} className="rounded-md py-2 px-4 text-white bg-purple-900">
+                <button
+                  onClick={() => increaseCartQuantity(computer.index)}
+                  className="rounded-md py-2 px-4 text-white bg-purple-900"
+                >
                   +
                 </button>
               </div>
 
               <div className="">
-                <button onClick={() => removeFromCart(computer.index)} className="rounded-md mt-2 py-2 px-4 text-white bg-rose-500">
+                <button
+                  onClick={() => removeFromCart(computer.index)}
+                  className="rounded-md mt-2 py-2 px-4 text-white bg-rose-500"
+                >
                   Remove
                 </button>
               </div>

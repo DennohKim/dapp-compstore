@@ -5,17 +5,14 @@ import Image from "next/image";
 import { useEffect, useState, useContext, useCallback } from "react";
 import { BigNumber } from "bignumber.js";
 import { shortenAddress } from "@/utils/shortenAddress";
-import AddComputerModal from "./AddComputerModal";
-import { MarketplaceContext } from "@/context/marketplaceContext";
 import { Summary } from "@/typings";
 import { StableToken } from "@celo/contractkit/lib/celo-tokens";
 import { StableTokenWrapper } from "@celo/contractkit/lib/wrappers/StableTokenWrapper";
 import Web3 from "web3";
-import { HiShoppingCart } from "react-icons/hi";
+import CheckoutModal from "./CheckoutModal";
+
 
 export default function Header() {
-
-  
 
   const defaultSummary: Summary = {
     name: "",
@@ -25,11 +22,9 @@ export default function Header() {
   };
 
   const [summary, setSummary] = useState<Summary>(defaultSummary);
-  
+
   let [componentInitialized, setComponentInitialized] = useState(false);
   let { initialised, address, connect, disconnect, kit } = useCelo();
-
-
 
   async function getBalances(
     stableTokens: {
@@ -104,7 +99,6 @@ export default function Header() {
   useEffect(() => {
     if (initialised) {
       setComponentInitialized(true);
-      
     }
   }, [initialised]);
 
@@ -148,13 +142,9 @@ export default function Header() {
                 {componentInitialized && address ? (
                   <div className="flex gap-4 items-center">
                     <div>
-                      <button className="relative flex justify-center items-center text-xl text-purple-900 rounded-full  h-12 w-12 border border-purple-900">
-                        <HiShoppingCart />
-                        <div className="absolute  h-6 w-6 top-8 left-6 rounded-full bg-rose-700 flex justify-center items-center text-white text-sm">
-                          3
-                        </div>
-                      </button>
+                      <CheckoutModal />
                     </div>
+
                     <p className="inline-flex content-center place-items-center rounded-full py-2 px-5 text-md font-medium border-2 border-[#250438] text-[#250438]">
                       CELO BAL: {Web3.utils.fromWei(summary.celo.toFixed())}
                     </p>
@@ -196,13 +186,10 @@ export default function Header() {
                 {componentInitialized && address ? (
                   <div className="flex flex-col items-start space-y-4 ml-4">
                     <div>
-                      <button className="relative flex justify-center items-center text-xl text-blue-500 rounded-full  h-12 w-12 border border-blue-500">
-                        <HiShoppingCart />
-                        <div className="absolute  h-6 w-6 top-8 left-6 rounded-full bg-rose-700 flex justify-center items-center text-white text-sm">
-                          3
-                        </div>
-                      </button>
+                      <CheckoutModal />
+                      
                     </div>
+
                     <p className=" text-white inline-flex content-center place-items-center rounded-full py-2 px-5 text-md font-medium bg-gray-500/30">
                       CELO BAL: {Web3.utils.fromWei(summary.celo.toFixed())}
                     </p>

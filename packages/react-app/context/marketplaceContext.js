@@ -2,25 +2,23 @@ import { useCelo } from "@celo/react-celo";
 import { newKitFromWeb3 } from "@celo/contractkit";
 import { ethers } from "ethers";
 import { BigNumber } from "bignumber.js";
-import { createContext } from "react";
+import { createContext, useEffect, useState } from "react";
 import {
   ComputerMarketplaceAbi,
   ComputerMarketplaceContract,
   erc20Abi,
 } from "./constants";
 
-// Function to create contract when the seller or creator is passed in
 
 //Create marketplace context
 export const MarketplaceContext = createContext();
 
-let provider;
+
 let products = [];
-const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1";
 const celoContractAddress = "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9";
 
 export const MarketplaceProvider = ({ children }) => {
-  
+  const [computers, setComputers] = useState([]);
 
   const fetchContract = (signerOrProvider) =>
     new ethers.Contract(
@@ -58,6 +56,12 @@ export const MarketplaceProvider = ({ children }) => {
     return products;
   };
 
+  useEffect(() => {
+    getProducts().then((data) => {
+      setComputers(data);
+      console.log(data);
+    });
+  }, []);
   
 
   //define constants
@@ -174,6 +178,7 @@ export const MarketplaceProvider = ({ children }) => {
         fetchContract,
         approvePrice,
         handleClick,
+        computers
       }}
     >
       {children}
