@@ -51,6 +51,7 @@ export default function ComputerModal() {
       specs,
       location,
       ethers.utils.parseEther(price),
+     
     ];
 
     try {
@@ -60,9 +61,9 @@ export default function ComputerModal() {
       setImageUrl("");
       setLocation("");
       setSpecs("");
-      setPrice("0");
+      setPrice("");
       alert(`🎉 You successfully added "${params[0]}".`);
-      await getProducts();
+      getProducts();
     } catch (error) {
       alert(`⚠️ ${error}.`);
     }
@@ -113,7 +114,11 @@ export default function ComputerModal() {
                     List a Computer
                   </Dialog.Title>
                   <div className="mt-2">
-                    <form className="p-4"  data-theme="cupcake"  onSubmit={handleSubmit}>
+                    <form
+                      className="p-4"
+                      data-theme="cupcake"
+                      onSubmit={handleSubmit}
+                    >
                       <div className="space-y-4">
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2  ">
                           <div>
@@ -156,21 +161,21 @@ export default function ComputerModal() {
                               onChange={(e) => setSpecs(e.target.value)}
                             />
                           </div>
-                        </div>
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 ">
                           <div>
                             <label className="label">
                               <span className="label-text">Store Location</span>
                             </label>
                             <input
                               type="text"
-                              placeholder="Location"
+                              placeholder="Store Location"
                               name="location"
                               value={location}
                               onChange={(e) => setLocation(e.target.value)}
                               className="input-bordered input rounded-md w-full max-w-xs"
                             />
                           </div>
+                        </div>
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 ">
                           <div>
                             <label className="label">
                               <span className="label-text">Price</span>

@@ -17,7 +17,7 @@ const ComputerCard = ({computer}: {computer: Computer}) => {
 
  
   return (
-    <div  className="group flex flex-col space-y-6">
+    <div className="group flex flex-col space-y-6">
       <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-w-7 xl:aspect-h-8">
         <Image
           width={300}
@@ -42,6 +42,12 @@ const ComputerCard = ({computer}: {computer: Computer}) => {
           <div className="font-bold">
             {ethers.utils.formatEther(computer.price)} CELO
           </div>
+        </div>
+        <div className="pt-2 flex items-center">
+          <div className="flex items-center">
+            <p className="text-sm"> {computer.stock}</p>
+          </div>
+         
         </div>
         <div className="mt-2">
           {quantity === 0 ? (

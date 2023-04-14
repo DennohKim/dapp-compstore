@@ -26,8 +26,8 @@ export interface Computer {
   image_url: string;
   computer_specs: string;
   store_location: string;
-  price: BigNumber;
-  sold: BigNumber;
+  stock: string;
+  price: string;
 }
 
 export interface CustomWindow extends Window {
