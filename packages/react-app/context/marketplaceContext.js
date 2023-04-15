@@ -19,6 +19,7 @@ const celoContractAddress = "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9";
 
 export const MarketplaceProvider = ({ children }) => {
   const [computers, setComputers] = useState([]);
+  const [myProducts, setMyProducts] = useState([]);
 
   const fetchContract = (signerOrProvider) =>
     new ethers.Contract(
@@ -62,6 +63,36 @@ export const MarketplaceProvider = ({ children }) => {
       console.log(data);
     });
   }, []);
+
+   async function fetchMyProducts() {
+     try {
+       const provider = new ethers.providers.Web3Provider(window.ethereum);
+       const signer = provider.getSigner();
+       const contract = new ethers.Contract(
+         ComputerMarketplaceContract,
+         ComputerMarketplaceAbi,
+         signer
+       );
+       const accounts = await window.ethereum.request({
+         method: "eth_accounts",
+       });
+       const currentUser = accounts[0];
+       const products = await contract.getProductsByUser(currentUser);
+       return products;
+     } catch (err) {
+       console.error(err);
+     }
+   }
+   
+  //get my products
+  useEffect(() => {
+    fetchMyProducts().then((data) => {
+      setMyProducts(data);
+      console.log(data);
+    });
+  }, []);
+   
+
   
 
   //define constants
@@ -178,7 +209,8 @@ export const MarketplaceProvider = ({ children }) => {
         fetchContract,
         approvePrice,
         handleClick,
-        computers
+        computers, 
+        myProducts
       }}
     >
       {children}

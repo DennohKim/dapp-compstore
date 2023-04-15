@@ -26,7 +26,6 @@ export interface Computer {
   image_url: string;
   computer_specs: string;
   store_location: string;
-  stock: string;
   price: string;
 }
 

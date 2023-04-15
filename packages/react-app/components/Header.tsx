@@ -149,6 +149,14 @@ export default function Header() {
                     Home
                   </Link>
                 </div>
+                <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+                  <Link
+                    href="/mycomputers"
+                    className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900"
+                  >
+                    My Computers
+                  </Link>
+                </div>
               </div>
               <div className="absolute inset-y-0 right-0 hidden sm:flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 {address ? (
@@ -199,7 +207,6 @@ export default function Header() {
                   <div className="flex flex-col items-start space-y-4 ml-4">
                     <div>
                       <CheckoutModal />
-                      
                     </div>
 
                     <p className=" text-white inline-flex content-center place-items-center rounded-full py-2 px-5 text-md font-medium bg-gray-500/30">
