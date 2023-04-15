@@ -43,12 +43,6 @@ const ComputerCard = ({computer}: {computer: Computer}) => {
             {ethers.utils.formatEther(computer.price)} CELO
           </div>
         </div>
-        <div className="pt-2 flex items-center">
-          <div className="flex items-center">
-            <p className="text-sm"> {computer.stock}</p>
-          </div>
-         
-        </div>
         <div className="mt-2">
           {quantity === 0 ? (
             <button

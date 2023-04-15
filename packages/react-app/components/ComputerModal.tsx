@@ -5,6 +5,7 @@ import { useState, useContext, FormEvent, Fragment } from "react";
 import { ethers } from "ethers";
 import { BigNumber } from "bignumber.js";
 import { CustomWindow } from "@/typings";
+import { useRouter } from "next/navigation";
 
 export default function ComputerModal() {
   const { fetchContract, getProducts } = useContext(MarketplaceContext);
@@ -16,6 +17,8 @@ export default function ComputerModal() {
   const [location, setLocation] = useState<string>("");
   const [specs, setSpecs] = useState<string>("");
   const [price, setPrice] = useState<string>("0");
+
+  const router = useRouter();
 
   function closeModal() {
     setIsOpen(false);
@@ -63,7 +66,7 @@ export default function ComputerModal() {
       setSpecs("");
       setPrice("");
       alert(`🎉 You successfully added "${params[0]}".`);
-      getProducts();
+      router.refresh();
     } catch (error) {
       alert(`⚠️ ${error}.`);
     }

@@ -1,18 +1,13 @@
-import { useCelo } from "@celo/react-celo";
-import { newKitFromWeb3 } from "@celo/contractkit";
 import { ethers } from "ethers";
-import { BigNumber } from "bignumber.js";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useCallback } from "react";
 import {
   ComputerMarketplaceAbi,
   ComputerMarketplaceContract,
   erc20Abi,
 } from "./constants";
 
-
 //Create marketplace context
 export const MarketplaceContext = createContext();
-
 
 let products = [];
 const celoContractAddress = "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9";
@@ -28,7 +23,8 @@ export const MarketplaceProvider = ({ children }) => {
       signerOrProvider
     );
 
-  const getProducts = async function () {
+
+  const getProducts = useCallback(async function () {
     const provider = new ethers.providers.JsonRpcProvider(
       "https://alfajores-forno.celo-testnet.org"
     );
@@ -53,87 +49,86 @@ export const MarketplaceProvider = ({ children }) => {
       });
       _products.push(_product);
     }
-    products = await Promise.all(_products);
+    const products = await Promise.all(_products);
     return products;
-  };
+  }, []);
+
 
   useEffect(() => {
-    getProducts().then((data) => {
+    const fetchProducts = async () => {
+      const data = await getProducts();
       setComputers(data);
       console.log(data);
-    });
-  }, []);
+    };
+    fetchProducts();
+  }, [getProducts]);
 
-   async function fetchMyProducts() {
-     try {
-       const provider = new ethers.providers.Web3Provider(window.ethereum);
-       const signer = provider.getSigner();
-       const contract = new ethers.Contract(
-         ComputerMarketplaceContract,
-         ComputerMarketplaceAbi,
-         signer
-       );
-       const accounts = await window.ethereum.request({
-         method: "eth_accounts",
-       });
-       const currentUser = accounts[0];
-       const products = await contract.getProductsByUser(currentUser);
-       return products;
-     } catch (err) {
-       console.error(err);
-     }
-   }
-   
-  //get my products
-  useEffect(() => {
-    fetchMyProducts().then((data) => {
-      setMyProducts(data);
-      console.log(data);
+const fetchMyProducts = useCallback(async function () {
+  try {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(
+      ComputerMarketplaceContract,
+      ComputerMarketplaceAbi,
+      signer
+    );
+    const accounts = await window.ethereum.request({
+      method: "eth_accounts",
     });
-  }, []);
-   
+    const currentUser = accounts[0];
+    const products = await contract.getProductsByUser(currentUser);
+    return products;
+  } catch (err) {
+    console.error(err);
+  }
+}, []);
 
-  
+//get my products
+useEffect(() => {
+  fetchMyProducts().then((data) => {
+    setMyProducts(data);
+    console.log(data);
+  });
+}, [fetchMyProducts]);
 
   //define constants
- 
- const getsigner = async()=>{
-  if (!window.ethereum) {
-    alert("Please install MetaMask to use this feature.");
-    return;
-  }
 
-  await window.ethereum.enable();
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-  return signer;
+  const getsigner = async () => {
+    if (!window.ethereum) {
+      alert("Please install MetaMask to use this feature.");
+      return;
+    }
 
- }
-
+    await window.ethereum.enable();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    return signer;
+  };
 
   //define functions
   async function approvePrice(price) {
-     if (!window.ethereum) {
-       alert("Please install MetaMask to use this feature.");
-       return;
-     }
+    if (!window.ethereum) {
+      alert("Please install MetaMask to use this feature.");
+      return;
+    }
 
-     await window.ethereum.enable();
-     const provider = new ethers.providers.Web3Provider(window.ethereum);
-     const signer = provider.getSigner();
-     const celoContract = new ethers.Contract(
-       celoContractAddress,
-       erc20Abi,
-       signer
-     );
+    await window.ethereum.enable();
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const celoContract = new ethers.Contract(
+      celoContractAddress,
+      erc20Abi,
+      signer
+    );
 
-     const result = await celoContract.approve(
-       ComputerMarketplaceContract, price,
-       {
-         from: await signer.getAddress(),
-       }
-     );
-     return result;
+    const result = await celoContract.approve(
+      ComputerMarketplaceContract,
+      price,
+      {
+        from: await signer.getAddress(),
+      }
+    );
+    return result;
   }
 
   async function buyProduct(index, price) {
@@ -143,7 +138,6 @@ export const MarketplaceProvider = ({ children }) => {
       ComputerMarketplaceAbi,
       signer
     );
-
 
     try {
       const tx = await contract.buyProduct(index);
@@ -161,21 +155,10 @@ export const MarketplaceProvider = ({ children }) => {
     const index = e.target.getAttribute("data-index");
     const product = products[index];
 
-     if (!window.ethereum) {
-       alert("Please install MetaMask to use this feature.");
-       return;
-     }
-
-     await window.ethereum.enable();
-     const provider = new ethers.providers.Web3Provider(window.ethereum);
-     const signer = provider.getSigner();
-     const contract = fetchContract(provider);
-
-     const celoContract = new ethers.Contract(
-       celoContractAddress,
-       erc20Abi,
-       signer
-     );
+    if (!window.ethereum) {
+      alert("Please install MetaMask to use this feature.");
+      return;
+    }
 
     // prompt user to approve payment
     alert(`⌛ Waiting for payment approval for "${product.computer_title}"...`);
@@ -201,6 +184,29 @@ export const MarketplaceProvider = ({ children }) => {
     }
   }
 
+  async function deleteProduct(index) {
+   
+     const provider = new ethers.providers.Web3Provider(window.ethereum);
+     const signer = provider.getSigner();
+     const account = signer.getAddress();
+     const contract = new ethers.Contract(
+       ComputerMarketplaceContract,
+       ComputerMarketplaceAbi,
+       signer
+     );
+    try {
+      const tx = await contract.deleteProduct(index);
+      await tx.wait();
+      alert("Product deleted successfully");
+      // Refresh the list of my products
+
+      const products = await contract.getProductsByUser(account);
+      setMyProducts(products);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete product");
+    }
+  }
 
   return (
     <MarketplaceContext.Provider
@@ -209,8 +215,9 @@ export const MarketplaceProvider = ({ children }) => {
         fetchContract,
         approvePrice,
         handleClick,
-        computers, 
-        myProducts
+        computers,
+        myProducts,
+        deleteProduct,
       }}
     >
       {children}
