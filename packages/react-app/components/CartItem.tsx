@@ -1,11 +1,8 @@
-import { MarketplaceContext } from "@/context/marketplaceContext";
 import { Computer } from "@/typings";
 import Image from "next/image";
-import { useContext } from "react";
-import { Button, Stack } from "react-bootstrap";
 import { useShoppingCart } from "../context/ShoppingCartContext";
 import { ethers } from "ethers";
-
+import { useMarketPlace } from "@/context/MarketPlaceContext";
 
 type CartItemProps = {
   id: number;
@@ -14,17 +11,15 @@ type CartItemProps = {
 
 export function CartItem({ id, quantity }: CartItemProps) {
   const { removeFromCart, cartQuantity } = useShoppingCart();
-  const { computers, handleClick } = useContext(MarketplaceContext);
+  const { computers, handleClick } = useMarketPlace();
 
-
-
-  const item = computers.find((i: any) => {
+  const item = computers.find((i) => {
     console.log("computers", i.index);
     return i.index === id;
-  } );
-
+  });
   
-  if (item === null) return null;
+  // check if item is undefined or falsy
+  if (!item) return null;
 
   return (
     <div className="flex flex-col items-start gap-2">

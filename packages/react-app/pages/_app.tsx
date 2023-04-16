@@ -6,8 +6,8 @@ import '@celo/react-celo/lib/styles.css';
 
 
 import Layout from "../components/Layout";
-import { MarketplaceProvider } from "@/context/marketplaceContext";
 import { ShoppingCartProvider } from "@/context/ShoppingCartContext";
+import MarketPlaceProvider from "@/context/MarketPlaceContext";
 
 function App({ Component, pageProps }: AppProps) {
   return (
@@ -23,13 +23,13 @@ function App({ Component, pageProps }: AppProps) {
         providersOptions: { searchable: true },
       }}
     >
-      <MarketplaceProvider>
+      <MarketPlaceProvider>
         <ShoppingCartProvider>
           <Layout>
             <Component {...pageProps} />
           </Layout>
         </ShoppingCartProvider>
-      </MarketplaceProvider>
+      </MarketPlaceProvider>
     </CeloProvider>
   );
 }

@@ -1,14 +1,14 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { MarketplaceContext } from "@/context/marketplaceContext";
 import { useCelo } from "@celo/react-celo";
 import { useState, useContext, FormEvent, Fragment } from "react";
 import { ethers } from "ethers";
 import { BigNumber } from "bignumber.js";
 import { CustomWindow } from "@/typings";
 import { useRouter } from "next/navigation";
+import { useMarketPlace } from "@/context/MarketPlaceContext";
 
 export default function ComputerModal() {
-  const { fetchContract, getProducts } = useContext(MarketplaceContext);
+  const { fetchContract } = useMarketPlace();
 
   let [isOpen, setIsOpen] = useState(false);
 

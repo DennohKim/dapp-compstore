@@ -1,10 +1,10 @@
 import MyComputersCard from '@/components/MyComputersCard';
-import { MarketplaceContext } from '@/context/marketplaceContext';
+import { useMarketPlace } from '@/context/marketplaceContext';
 import { Computer } from '@/typings';
 import { useContext } from 'react';
 
 const Mycomputers = () => {
-    const { myProducts } = useContext(MarketplaceContext);
+    const { myProducts } = useMarketPlace();
 
   return (
     <div className="bg-white rounded-lg">

@@ -20,6 +20,6 @@
     },
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "next.config.js", "tailwind.config.js", "tailwind.config.js", "context/marketplaceContext.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "next.config.js", "tailwind.config.js", "tailwind.config.js", "context/marketplaceContext.jsxx"],
   "exclude": ["node_modules"]
 }

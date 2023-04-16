@@ -2,13 +2,13 @@ import { Computer } from '@/typings';
 import Image from 'next/image';
 import { ethers } from "ethers";
 import { IoIosPin } from 'react-icons/io';
-import { MarketplaceContext } from '@/context/marketplaceContext';
 import { useContext } from 'react';
+import { useMarketPlace } from '@/context/MarketPlaceContext';
 
 const MyComputersCard = (
     { computer, index }: { computer: Computer; index: number }
 ) => {
-  const { deleteProduct } = useContext(MarketplaceContext);
+  const { deleteProduct } = useMarketPlace();
 
   return (
     <div className="group flex flex-col space-y-6">

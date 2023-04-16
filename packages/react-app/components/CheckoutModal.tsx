@@ -1,15 +1,15 @@
-import { MarketplaceContext } from "@/context/marketplaceContext";
+import { useMarketPlace } from "@/context/MarketPlaceContext";
 import { useShoppingCart } from "@/context/ShoppingCartContext";
 import { Dialog, Transition } from "@headlessui/react";
 import { ethers } from "ethers";
-import { Fragment, useContext, useState } from "react";
+import { Fragment, useState } from "react";
 import { HiShoppingCart } from "react-icons/hi";
 import { CartItem } from "./CartItem";
 
 export default function TestModal() {
   const { cartItems, cartQuantity } = useShoppingCart();
   
-  const { computers } = useContext(MarketplaceContext);
+  const { computers } = useMarketPlace();
 
   let [isOpen, setIsOpen] = useState(false);
 

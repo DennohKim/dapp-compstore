@@ -5,10 +5,10 @@ import { IoIosPin } from "react-icons/io";
 import { shortenAddress } from "@/utils/shortenAddress";
 import { BigNumber } from "ethers";
 import { useContext } from "react";
-import { MarketplaceContext } from "@/context/marketplaceContext";
+import { useMarketPlace } from "@/context/MarketPlaceContext";
 
 export default function DetailsModal({ computer }: { computer: Computer }) {
-  const { handleClick } = useContext(MarketplaceContext);
+  const { handleClick } =useMarketPlace();
 
   const value = ethers.utils.formatEther(computer.sold);
 

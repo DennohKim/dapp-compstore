@@ -1,15 +1,15 @@
-import { MarketplaceContext } from "@/context/marketplaceContext";
 import { useCelo } from "@celo/react-celo";
 import { useState, useContext, FormEvent } from "react";
 import { ethers } from "ethers";
 import { BigNumber } from "bignumber.js";
 import { CustomWindow } from "@/typings";
+import { useMarketPlace } from "@/context/MarketPlaceContext";
 
 
 export default function AddComputerModal() {
   
 
-  const { fetchContract, getProducts } = useContext(MarketplaceContext);
+  const { fetchContract, getProducts } = useMarketPlace();
 
   const [title, setTitle] = useState<string>("");
   const [imageUrl, setImageUrl] = useState<string>("");
