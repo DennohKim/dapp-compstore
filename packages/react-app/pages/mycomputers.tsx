@@ -1,5 +1,5 @@
 import MyComputersCard from '@/components/MyComputersCard';
-import { useMarketPlace } from '@/context/marketplaceContext';
+import { useMarketPlace } from '@/context/MarketPlaceContext';
 import { Computer } from '@/typings';
 import { useContext } from 'react';
 
