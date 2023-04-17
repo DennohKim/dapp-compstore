@@ -47,13 +47,13 @@ contract ComputerMarketplace {
         locked = false;
     }
     
-    uint256 constant MAX_PRICE = 1000000000;
+    uint256 constant MAX_PRICE = 100000000000000000000;
 
     mapping(uint => Product) internal products;
 
     mapping(address => uint) internal productsByUser;
 
-    uint internal maxProductsPerUser = 5;
+    uint internal maxProductsPerUser = 10;
 
     event ProductCreated(address indexed owner, string computer_title, string image_url, string computer_specs, string store_location, uint price);
     event ProductDeleted(address indexed owner, string computer_title, string image_url);
