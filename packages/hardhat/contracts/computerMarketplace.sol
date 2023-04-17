@@ -38,12 +38,26 @@ contract ComputerMarketplace {
         uint price;
         uint sold;
     }
+    bool private locked = false;
+
+    modifier nonReentrant() {
+        require(!locked, "Reentrant call.");
+        locked = true;
+        _;
+        locked = false;
+    }
+    
+    uint256 constant MAX_PRICE = 1000000000;
 
     mapping(uint => Product) internal products;
 
     mapping(address => uint) internal productsByUser;
 
     uint internal maxProductsPerUser = 5;
+
+    event ProductCreated(address indexed owner, string computer_title, string image_url, string computer_specs, string store_location, uint price);
+    event ProductDeleted(address indexed owner, string computer_title, string image_url);
+
 
     function setMaxProductsPerUser(uint _maxProductsPerUser) public {
         require(
@@ -60,6 +74,13 @@ contract ComputerMarketplace {
         string memory _store_location,
         uint _price
     ) public {
+        require(bytes(_computer_title).length > 0, "Computer title cannot be empty");
+        require(bytes(_image_url).length > 0, "Image URL cannot be empty");
+        require(bytes(_computer_specs).length > 0, "Computer specs cannot be empty");
+        require(bytes(_store_location).length > 0, "Store location cannot be empty");
+        require(_price > 0, "Price must be greater than zero");
+        require(_price > 0 && _price <= MAX_PRICE, "Invalid product price");
+
         require(
             productsByUser[msg.sender] < maxProductsPerUser,
             "Maximum products per user reached"
@@ -78,6 +99,9 @@ contract ComputerMarketplace {
 
         productsLength++;
         productsByUser[msg.sender]++;
+
+        emit ProductCreated(msg.sender, _computer_title, _image_url, _computer_specs, _store_location, _price);
+
     }
 
     function readProduct(
@@ -106,7 +130,7 @@ contract ComputerMarketplace {
         );
     }
 
-    function buyProduct(uint _index) public payable {
+    function buyProduct(uint _index) public payable nonReentrant {
         require(
             IERC20Token(celoTokenAddress).transferFrom(
                 msg.sender,
@@ -140,6 +164,9 @@ contract ComputerMarketplace {
 
         // Update the product count for the owner
         productsByUser[msg.sender]--;
+
+         emit ProductDeleted(products[_index].owner, products[_index].computer_title, products[_index].image_url);
+
     }
 
     function getProductsByUser(
