@@ -16,6 +16,7 @@ async function main() {
   console.log("Computer Marketplace deployed to:", computerMarketplaceContract.address);
 }
 
+// Call the main function and exit the process with exit code 0 on success or 1 on error
 main()
   .then(() => process.exit(0))
   .catch((error) => {
