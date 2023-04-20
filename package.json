@@ -1,35 +1,61 @@
 {
+    // The name of the package
     "name": "comp-store",
+    // The version of the package
     "version": "1.0.0",
+    // A description of the package
     "description": "Custom Celo Composer project.",
+    // Whether or not the package is private (not intended for publishing to npm)
     "private": true,
+    // The author of the package
     "author": "Celo",
+    // The license under which the package is released
     "license": "MIT",
+    // A list of scripts that can be run using npm/yarn
     "scripts": {
+        // Run tests for the hardhat package in the workspace
         "hardhat:test": "yarn workspace @comp-store/hardhat test",
+        // Run tests for the hardhat package in local mode
         "hardhat:test-local": "yarn workspace @comp-store/hardhat test-local",
+        // List available accounts in the hardhat package
         "hardhat:accounts": "yarn workspace @comp-store/hardhat accounts",
+        // Start a local development chain using the hardhat package
         "hardhat:devchain": "yarn workspace @comp-store/hardhat devchain",
+        // Deploy contracts using the hardhat package
         "hardhat:deploy": "yarn workspace @comp-store/hardhat deploy",
+        // Deploy contracts using the hardhat package, resetting the chain in the process and watching for changes
         "hardhat:deploy-reset-watch": "yarn workspace @comp-store/hardhat deploy-reset-watch",
+        // Watch for changes in the hardhat package and rebuild/deploy as necessary
         "hardhat:watch": "yarn workspace @comp-store/hardhat watch",
+        // Create a fork of the mainnet using the hardhat package
         "hardhat:fork-mainnet": "yarn workspace @comp-store/hardhat fork-mainnet",
+        // Start a local development server for the React app package
         "react-app:dev": "yarn workspace @comp-store/react-app dev",
+        // Build the React app package for production
         "react-app:build": "yarn workspace @comp-store/react-app build",
+        // Start the built React app package
         "react-app:start": "yarn workspace @comp-store/react-app start",
+        // Lint the React app package
         "react-app:lint": "yarn workspace @comp-store/react-app lint"
     },
+    // The repository where the package is stored
     "repository": {
+        // The type of repository (git, in this case)
         "type": "git",
+        // The URL of the repository
         "url": "git+https://github.com/celo-org/celo-composer.git"
     },
+    // The URL of the package's issue tracker
     "bugs": {
         "url": "https://github.com/celo-org/celo-composer/issues"
     },
+    // The URL of the package's homepage
     "homepage": "https://github.com/celo-org/celo-composer/blob/main/README.md",
+    // A list of workspaces that the package includes
     "workspaces": [
         "packages/*"
     ],
+    // A list of keywords that describe the package
     "keywords": [
         "celo-composer",
         "celo"
