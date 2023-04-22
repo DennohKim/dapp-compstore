@@ -181,22 +181,30 @@ contract ComputerMarketplace {
     */
 
     function buyProduct(uint _index) public payable nonReentrant {
-        require(msg.value == products[_index].price);
-        require(
-            IERC20Token(celoTokenAddress).transferFrom(
-                msg.sender,
-                products[_index].owner,
-                products[_index].price
-            ),
-            "Transfer failed."
-        );
-        products[_index].sold++;
-    }
-    
-    // Function retrieves the total number of products sold
-    function getProductsLength() public view returns (uint) {
-        return (productsLength);
-    }
+    require(msg.value == products[_index].price);
+
+    uint allowance = IERC20Token(celoTokenAddress).allowance(msg.sender, address(this));
+    require(allowance >= products[_index].price, "Celo token allowance not enough");
+
+    require(
+        IERC20Token(celoTokenAddress).transferFrom(
+            msg.sender,
+            products[_index].owner,
+            products[_index].price
+        ),
+        "Celo token transfer failed"
+    );
+
+    products[_index].owner.transfer(msg.value);
+    products[_index].sold++;
+
+    emit ProductDeleted(
+        products[_index].owner,
+        products[_index].computer_title,
+        products[_index].image_url
+    );
+}
+
     
     /*
       Function a seller uses to delete a product
