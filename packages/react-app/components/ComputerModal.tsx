@@ -1,15 +1,12 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { useCelo } from "@celo/react-celo";
-import { useState, useContext, FormEvent, Fragment } from "react";
+import { useState, FormEvent, Fragment } from "react";
 import { ethers } from "ethers";
-import { BigNumber } from "bignumber.js";
-import { CustomWindow } from "@/typings";
 import { useRouter } from "next/navigation";
-import { useMarketPlace } from "@/context/MarketPlaceContext";
 import { ComputerMarketplaceAbi, ComputerMarketplaceContract } from "@/context/constants";
 
 export default function ComputerModal() {
-  const { fetchContract } = useMarketPlace();
+ 
 
   const { kit, address } = useCelo();
 
