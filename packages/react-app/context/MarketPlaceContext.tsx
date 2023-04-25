@@ -1,4 +1,4 @@
-import { Computer } from "@/typings";
+import { Computer, CustomWindow } from "@/typings";
 import { useCelo } from "@celo/react-celo";
 import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
@@ -153,8 +153,7 @@ export default function MarketPlaceProvider({
       const tx = await contract.methods
         .buyProduct(index)
         .send({ from: address, value: price });
-    
-    
+
     } catch (error: any) {
       throw new Error(`Purchase failed: ${error.message}`);
     }
@@ -168,29 +167,26 @@ export default function MarketPlaceProvider({
     const index: number = parseInt(target.getAttribute("data-index")!);
     const product: Computer = computers[index];
 
-    const bigNum = new BigNumber(product.price);
-      const regularNum = bigNum.toNumber();
-      const price = regularNum * cartQuantity;
 
-      //console.log(price);
-
-      const convertedPrice = price.toString();
+    const number = parseInt(product.price);
+    const convertedPrice = number * cartQuantity;
+    const price = String(convertedPrice);
 
     try {
-      await approvePrice(convertedPrice);
+      await approvePrice(price);
     } catch (error: any) {
       alert(`⚠️ ${error.message}`);
       return;
     }
 
     // prompt user to confirm purchase
-    const confirmMsg: string = `Are you sure you want to buy "${product.computer_title}" for ${convertedPrice} CELO?`;
+    const confirmMsg: string = `Are you sure you want to buy "${product.computer_title}" for ${price} CELO?`;
     if (!confirm(confirmMsg)) return;
 
     // process purchase
     alert(`⌛ Processing purchase for "${product.computer_title}"...`);
     try {
-      await buyProduct(index, convertedPrice);
+      await buyProduct(index, price);
       alert(`🎉 You successfully bought "${product.computer_title}".`);
 
       removeFromCart(product.index);
@@ -199,6 +195,7 @@ export default function MarketPlaceProvider({
       alert(`⚠️ ${error.message}`);
     }
   }
+
 
 
   async function deleteProduct(index: number) {
