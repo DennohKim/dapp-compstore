@@ -47,7 +47,9 @@ export default function ComputerModal() {
     ];
 
     try {
-       await contract.methods.writeProduct(...params).send({from: address});
+        const tx = await contract.methods
+          .writeProduct(...params)
+          .send({ from: address });
       setTitle("");
       setImageUrl("");
       setLocation("");

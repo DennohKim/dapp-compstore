@@ -129,18 +129,38 @@ export default function MarketPlaceProvider({
 
   // define functions
   async function approvePrice(price: string) {
+    if (!address) {
+      alert("Please install the Celo Wallet extension to use this feature.");
+      return;
+    }
     const celoContract = new kit.connection.web3.eth.Contract(
       erc20Abi as any,
       celoContractAddress
     );
 
-    const result = await celoContract.methods
+    const txObject = celoContract.methods
       .approve(ComputerMarketplaceContract, price)
       .send({ from: address });
-    return result;
+    return txObject;
   }
 
-  //define event handler
+  async function buyProduct(index: number, price: string) {
+    const contract = new kit.connection.web3.eth.Contract(
+      ComputerMarketplaceAbi as any,
+      ComputerMarketplaceContract
+    );
+    try {
+      const tx = await contract.methods
+        .buyProduct(index)
+        .send({ from: address, value: price });
+    
+    
+    } catch (error: any) {
+      throw new Error(`Purchase failed: ${error.message}`);
+    }
+  }
+
+  // define event handler
   async function handleClick(e: MouseEvent<HTMLButtonElement>) {
     const target = e.target as HTMLDivElement;
     if (!target.classList.contains("buyBtn")) return;
@@ -149,18 +169,15 @@ export default function MarketPlaceProvider({
     const product: Computer = computers[index];
 
     const bigNum = new BigNumber(product.price);
-    const regularNum = bigNum.toNumber();
-    const price = regularNum * cartQuantity;
+      const regularNum = bigNum.toNumber();
+      const price = regularNum * cartQuantity;
 
-    //console.log(price);
+      //console.log(price);
 
-    const convertedPrice = new BigNumber(price.toString());
+      const convertedPrice = price.toString();
 
-    // prompt user to approve payment
-    alert(`⌛ Waiting for payment approval for "${product.computer_title}"...`);
     try {
-      await approvePrice(convertedPrice.toString());
-
+      await approvePrice(convertedPrice);
     } catch (error: any) {
       alert(`⚠️ ${error.message}`);
       return;
@@ -173,14 +190,10 @@ export default function MarketPlaceProvider({
     // process purchase
     alert(`⌛ Processing purchase for "${product.computer_title}"...`);
     try {
-      const contract = new kit.connection.web3.eth.Contract(
-        ComputerMarketplaceAbi as any,
-        ComputerMarketplaceContract
-      );
-      await contract.methods.buyProduct(index).send({ from: address });
-      
-      removeFromCart(product.index);
+      await buyProduct(index, convertedPrice);
       alert(`🎉 You successfully bought "${product.computer_title}".`);
+
+      removeFromCart(product.index);
       getProducts();
     } catch (error: any) {
       alert(`⚠️ ${error.message}`);
@@ -190,11 +203,13 @@ export default function MarketPlaceProvider({
 
   async function deleteProduct(index: number) {
     try {
-        const contract = new kit.connection.web3.eth.Contract(
-          ComputerMarketplaceAbi as any,
-          ComputerMarketplaceContract
-        );
-      const tx = await contract.methods.deleteProduct(index).send({ from: address });
+      const contract = new kit.connection.web3.eth.Contract(
+        ComputerMarketplaceAbi as any,
+        ComputerMarketplaceContract
+      );
+      const tx = await contract.methods
+        .deleteProduct(index)
+        .send({ from: address });
       alert("Product deleted successfully");
 
       // Refresh the list of my products
