@@ -8,8 +8,13 @@ const nextConfig = {
     };
     return config;
   },
-  images: { domains: ["d3959dyu54wgqd.cloudfront.net"] },
-  
+  images: {
+    domains: [
+      "d3959dyu54wgqd.cloudfront.net",
+      "cdn.thepcenthusiast.com",
+      "upload.wikimedia.org",
+    ],
+  },
 };
 
 module.exports = nextConfig

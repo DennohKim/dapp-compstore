@@ -23,13 +23,13 @@ function App({ Component, pageProps }: AppProps) {
         providersOptions: { searchable: true },
       }}
     >
-      <MarketPlaceProvider>
-        <ShoppingCartProvider>
+      <ShoppingCartProvider>
+        <MarketPlaceProvider>
           <Layout>
             <Component {...pageProps} />
           </Layout>
-        </ShoppingCartProvider>
-      </MarketPlaceProvider>
+        </MarketPlaceProvider>
+      </ShoppingCartProvider>
     </CeloProvider>
   );
 }

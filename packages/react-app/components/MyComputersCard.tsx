@@ -2,7 +2,6 @@ import { Computer } from '@/typings';
 import Image from 'next/image';
 import { ethers } from "ethers";
 import { IoIosPin } from 'react-icons/io';
-import { useContext } from 'react';
 import { useMarketPlace } from '@/context/MarketPlaceContext';
 
 const MyComputersCard = (
@@ -34,7 +33,7 @@ const MyComputersCard = (
             <p className="text-sm"> {computer.store_location}</p>
           </div>
           <div className="font-bold">
-            {ethers.utils.formatEther(computer.price)} CELO
+            {ethers.utils.formatEther(computer.price.toString())} CELO
           </div>
         </div>
       </div>

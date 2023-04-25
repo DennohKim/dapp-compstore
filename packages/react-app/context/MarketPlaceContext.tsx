@@ -1,5 +1,8 @@
-import { Computer, CustomWindow } from "@/typings";
+import { Computer } from "@/typings";
+import { useCelo } from "@celo/react-celo";
+import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
+import { useRouter } from "next/navigation";
 import {
   createContext,
   MouseEvent,
@@ -13,6 +16,7 @@ import {
   ComputerMarketplaceContract,
   erc20Abi,
 } from "./constants";
+import { useShoppingCart } from "./ShoppingCartContext";
 
 type MarketPlaceProviderProps = {
   children: React.ReactNode;
@@ -29,9 +33,6 @@ type MarketPlaceContextType = {
   deleteProduct: (index: number) => void;
 };
 
-
-
-
 export const MarketPlaceContext = createContext({} as MarketPlaceContextType);
 
 export function useMarketPlace() {
@@ -42,13 +43,15 @@ export function useMarketPlace() {
 const celoContractAddress: string =
   "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9";
 
-
-
 export default function MarketPlaceProvider({
   children,
 }: MarketPlaceProviderProps) {
+  const { kit, address } = useCelo();
   const [computers, setComputers] = useState<Computer[]>([]);
   const [myProducts, setMyProducts] = useState<Computer[]>([]);
+  const { cartQuantity, removeFromCart } = useShoppingCart();
+
+  const router = useRouter();
 
   const fetchContract = useCallback(
     (signerOrProvider: ethers.Signer | ethers.providers.Provider) =>
@@ -62,17 +65,17 @@ export default function MarketPlaceProvider({
 
   const getProducts = useCallback(
     async function (): Promise<Computer[]> {
-      const provider = new ethers.providers.JsonRpcProvider(
-        "https://alfajores-forno.celo-testnet.org"
+      const contract = new kit.connection.web3.eth.Contract(
+        ComputerMarketplaceAbi as any,
+        ComputerMarketplaceContract
       );
-      const contract = fetchContract(provider);
 
-      const _productsLength = await contract.getProductsLength();
+      const _productsLength = await contract.methods.getProductsLength().call();
       const _products = [];
 
       for (let i = 0; i < _productsLength; i++) {
         let _product = new Promise(async (resolve, reject) => {
-          let p = await contract.readProduct(i);
+          let p = await contract.methods.readProduct(i).call();
           resolve({
             index: i,
             owner: p[0],
@@ -89,7 +92,7 @@ export default function MarketPlaceProvider({
       const products = await Promise.all(_products);
       return products as Computer[];
     },
-    [fetchContract]
+    [kit]
   );
 
   useEffect(() => {
@@ -101,97 +104,43 @@ export default function MarketPlaceProvider({
     fetchProducts();
   }, [getProducts]);
 
-  const fetchMyProducts = useCallback(async function () {
-    try {
-      const provider = new ethers.providers.Web3Provider(
-        (window as CustomWindow).ethereum
-      );
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(
-        ComputerMarketplaceContract,
-        ComputerMarketplaceAbi,
-        signer
-      );
-      const accounts = await (window as CustomWindow).ethereum.request({
-        method: "eth_accounts",
-      });
-      const currentUser = accounts[0];
-      const products = await contract.getProductsByUser(currentUser);
-      return products;
-    } catch (err) {
-      console.error(err);
-    }
-  }, []);
-
   //get my products
   useEffect(() => {
+    const fetchMyProducts = async function () {
+      try {
+        const contract = new kit.connection.web3.eth.Contract(
+          ComputerMarketplaceAbi as any,
+          ComputerMarketplaceContract
+        );
+        const products = await contract.methods
+          .getProductsByUser(address)
+          .call();
+        return products;
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     fetchMyProducts().then((data) => {
       setMyProducts(data);
       console.log(data);
     });
-  }, [fetchMyProducts]);
+  }, [kit, address]);
 
-  //define constants
-
-  const getsigner = async () => {
-    if (!(window as CustomWindow).ethereum) {
-      alert("Please install MetaMask to use this feature.");
-      return;
-    }
-
-    await (window as CustomWindow).ethereum.enable();
-    const provider = new ethers.providers.Web3Provider(
-      (window as CustomWindow).ethereum
-    );
-    const signer = provider.getSigner();
-    return signer;
-  };
-
-  //define functions
+  // define functions
   async function approvePrice(price: string) {
-    if (!(window as CustomWindow).ethereum) {
-      alert("Please install MetaMask to use this feature.");
-      return;
-    }
-
-    await (window as CustomWindow).ethereum.enable();
-    const provider = new ethers.providers.Web3Provider(
-      (window as CustomWindow).ethereum
-    );
-    const signer = provider.getSigner();
-    const celoContract = new ethers.Contract(
-      celoContractAddress,
-      erc20Abi,
-      signer
+    const celoContract = new kit.connection.web3.eth.Contract(
+      erc20Abi as any,
+      celoContractAddress
     );
 
-    const result = await celoContract.approve(
-      ComputerMarketplaceContract,
-      price,
-      {
-        from: await signer.getAddress(),
-      }
-    );
+    const result = await celoContract.methods
+      .approve(ComputerMarketplaceContract, price)
+      .send({ from: address });
     return result;
   }
 
-  async function buyProduct(index: number, price: string) {
-    const signer = await getsigner();
-    const contract = new ethers.Contract(
-      ComputerMarketplaceContract,
-      ComputerMarketplaceAbi,
-      signer
-    );
-
-    try {
-      const tx = await contract.buyProduct(index);
-      await tx.wait();
-      return true;
-    } catch (error: any) {
-      throw new Error(`Purchase failed: ${error.message}`);
-    }
-  }
-  // define event handler
+  //define event handler
   async function handleClick(e: MouseEvent<HTMLButtonElement>) {
     const target = e.target as HTMLDivElement;
     if (!target.classList.contains("buyBtn")) return;
@@ -199,28 +148,38 @@ export default function MarketPlaceProvider({
     const index: number = parseInt(target.getAttribute("data-index")!);
     const product: Computer = computers[index];
 
-    if (!(window as CustomWindow).ethereum) {
-      alert("Please install MetaMask to use this feature.");
-      return;
-    }
+    const bigNum = new BigNumber(product.price);
+    const regularNum = bigNum.toNumber();
+    const price = regularNum * cartQuantity;
+
+    //console.log(price);
+
+    const convertedPrice = new BigNumber(price.toString());
 
     // prompt user to approve payment
     alert(`⌛ Waiting for payment approval for "${product.computer_title}"...`);
     try {
-      await approvePrice(product.price);
+      await approvePrice(convertedPrice.toString());
+
     } catch (error: any) {
       alert(`⚠️ ${error.message}`);
       return;
     }
 
     // prompt user to confirm purchase
-    const confirmMsg: string = `Are you sure you want to buy "${product.computer_title}" for ${product.price} CELO?`;
+    const confirmMsg: string = `Are you sure you want to buy "${product.computer_title}" for ${convertedPrice} CELO?`;
     if (!confirm(confirmMsg)) return;
 
     // process purchase
     alert(`⌛ Processing purchase for "${product.computer_title}"...`);
     try {
-      await buyProduct(index, product.price);
+      const contract = new kit.connection.web3.eth.Contract(
+        ComputerMarketplaceAbi as any,
+        ComputerMarketplaceContract
+      );
+      await contract.methods.buyProduct(index).send({ from: address });
+      
+      removeFromCart(product.index);
       alert(`🎉 You successfully bought "${product.computer_title}".`);
       getProducts();
     } catch (error: any) {
@@ -228,26 +187,20 @@ export default function MarketPlaceProvider({
     }
   }
 
-  
-  async function deleteProduct(index: number) {
-    const provider = new ethers.providers.Web3Provider(
-      (window as CustomWindow).ethereum
-    );
-    const signer = provider.getSigner();
-    const account = signer.getAddress();
-    const contract = new ethers.Contract(
-      ComputerMarketplaceContract,
-      ComputerMarketplaceAbi,
-      signer
-    );
-    try {
-      const tx = await contract.deleteProduct(index);
-      await tx.wait();
-      alert("Product deleted successfully");
-      // Refresh the list of my products
 
-      const products = await contract.getProductsByUser(account);
+  async function deleteProduct(index: number) {
+    try {
+        const contract = new kit.connection.web3.eth.Contract(
+          ComputerMarketplaceAbi as any,
+          ComputerMarketplaceContract
+        );
+      const tx = await contract.methods.deleteProduct(index).send({ from: address });
+      alert("Product deleted successfully");
+
+      // Refresh the list of my products
+      const products = await contract.methods.getProductsByUser(address);
       setMyProducts(products);
+      router.refresh();
     } catch (err) {
       console.error(err);
       alert("Failed to delete product");

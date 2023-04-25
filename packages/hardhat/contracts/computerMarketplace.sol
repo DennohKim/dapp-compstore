@@ -38,7 +38,7 @@ contract ComputerMarketplace {
         0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9;
 
     address owner = msg.sender;
-    
+
     /*
     Product template struct
     */
@@ -56,7 +56,7 @@ contract ComputerMarketplace {
     // Boolean for non reentrant function
 
     bool private locked = false;
-    
+
     /* 
        Modifier making functions non reentrant by changing locked boolean for duration of transaction so that on reentry it does not pass the "not locked requirement"
     */
@@ -66,41 +66,60 @@ contract ComputerMarketplace {
         _;
         locked = false;
     }
-    modifier Onlyowner(){
-        require(msg.sender == owner
-        );
+    modifier Onlyowner() {
+        require(msg.sender == owner);
         _;
     }
-    
+
     //Setting Price limit for listings
     uint256 constant MAX_PRICE = 100000000000000000000;
-    
+
     //Mapping for prodict indices to product struct
     mapping(uint => Product) internal products;
-    
+
     //mapping users addresses to the indices for the product listings
     mapping(address => uint) internal productsByUser;
-    
-    //Max products for a seller can list 
+
+    //Max products for a seller can list
     uint internal maxProductsPerUser = 10;
-    
+
     //Events for product Listing and delisting
-    event ProductCreated(address indexed owner, string computer_title, string image_url, string computer_specs, string store_location, uint price);
-    event ProductDeleted(address indexed owner, string computer_title, string image_url);
+    event ProductCreated(
+        address indexed owner,
+        string computer_title,
+        string image_url,
+        string computer_specs,
+        string store_location,
+        uint price
+    );
+    event ProductDeleted(
+        address indexed owner,
+        string computer_title,
+        string image_url
+    );
+    event ProductSold(
+        address indexed owner,
+        string computer_title,
+        string image_url
+    );
 
     /*
     Function to change max products per user
      
     ->Requirement: Only the owner can set this limit
     */
-    function setMaxProductsPerUser(uint _maxProductsPerUser) public Onlyowner() {
+    function setMaxProductsPerUser(uint _maxProductsPerUser) public Onlyowner {
         require(
             _maxProductsPerUser > 0,
             "Maximum products per user must be greater than 0"
         );
         maxProductsPerUser = _maxProductsPerUser;
     }
-    
+
+    function getProductsLength() public view returns (uint) {
+        return (productsLength);
+    }
+
     /*
     Function to add product listing, Emits listing event "Product Created"
 
@@ -117,10 +136,19 @@ contract ComputerMarketplace {
         string memory _store_location,
         uint _price
     ) public {
-        require(bytes(_computer_title).length > 0, "Computer title cannot be empty");
+        require(
+            bytes(_computer_title).length > 0,
+            "Computer title cannot be empty"
+        );
         require(bytes(_image_url).length > 0, "Image URL cannot be empty");
-        require(bytes(_computer_specs).length > 0, "Computer specs cannot be empty");
-        require(bytes(_store_location).length > 0, "Store location cannot be empty");
+        require(
+            bytes(_computer_specs).length > 0,
+            "Computer specs cannot be empty"
+        );
+        require(
+            bytes(_store_location).length > 0,
+            "Store location cannot be empty"
+        );
         require(_price > 0 && _price <= MAX_PRICE, "Invalid product price");
 
         require(
@@ -142,10 +170,17 @@ contract ComputerMarketplace {
         productsLength++;
         productsByUser[msg.sender]++;
 
-        emit ProductCreated(msg.sender, _computer_title, _image_url, _computer_specs, _store_location, _price);
-
+        emit ProductCreated(
+            msg.sender,
+            _computer_title,
+            _image_url,
+            _computer_specs,
+            _store_location,
+            _price
+        );
     }
-     /*
+
+    /*
      Function allowing buyers to access data on a given product 
      */
     function readProduct(
@@ -174,38 +209,64 @@ contract ComputerMarketplace {
         );
     }
 
-
     /*
        Function allowing buyers to buy a product on the platform
        Increments the product sold counter for the number of total units sold
     */
 
     function buyProduct(uint _index) public payable nonReentrant {
-    require(msg.value == products[_index].price);
+        require(msg.value == products[_index].price);
 
-    uint allowance = IERC20Token(celoTokenAddress).allowance(msg.sender, address(this));
-    require(allowance >= products[_index].price, "Celo token allowance not enough");
-
-    require(
-        IERC20Token(celoTokenAddress).transferFrom(
+        uint allowance = IERC20Token(celoTokenAddress).allowance(
             msg.sender,
+            address(this)
+        );
+        require(
+            allowance >= products[_index].price,
+            "Celo token allowance not enough"
+        );
+
+        require(
+            IERC20Token(celoTokenAddress).transferFrom(
+                msg.sender,
+                products[_index].owner,
+                products[_index].price
+            ),
+            "Celo token transfer failed"
+        );
+
+        products[_index].owner.transfer(msg.value);
+        products[_index].sold++;
+
+        emit ProductSold(
             products[_index].owner,
-            products[_index].price
-        ),
-        "Celo token transfer failed"
-    );
+            products[_index].computer_title,
+            products[_index].image_url
+        );
+    }
 
-    products[_index].owner.transfer(msg.value);
-    products[_index].sold++;
+    function getProductsByUser(
+        address _user
+    ) public view returns (Product[] memory) {
+        uint count = 0;
+        for (uint i = 0; i < productsLength; i++) {
+            if (products[i].owner == _user) {
+                count++;
+            }
+        }
 
-    emit ProductDeleted(
-        products[_index].owner,
-        products[_index].computer_title,
-        products[_index].image_url
-    );
-}
+        Product[] memory ownedProducts = new Product[](count);
+        uint j = 0;
+        for (uint i = 0; i < productsLength; i++) {
+            if (products[i].owner == _user) {
+                ownedProducts[j] = products[i];
+                j++;
+            }
+        }
 
-    
+        return ownedProducts;
+    }
+
     /*
       Function a seller uses to delete a product
 
@@ -231,31 +292,5 @@ contract ComputerMarketplace {
 
         // Update the product count for the owner
         productsByUser[msg.sender]--;
-
-         emit ProductDeleted(products[_index].owner, products[_index].computer_title, products[_index].image_url);
-
-    }
-    
-    //Function returns products listed by a seller using for loop to search through the product mapping
-    function getProductsByUser(
-        address _user
-    ) public view returns (Product[] memory) {
-        uint count = 0;
-        for (uint i = 0; i < productsLength; i++) {
-            if (products[i].owner == _user) {
-                count++;
-            }
-        }
-
-        Product[] memory ownedProducts = new Product[](count);
-        uint j = 0;
-        for (uint i = 0; i < productsLength; i++) {
-            if (products[i].owner == _user) {
-                ownedProducts[j] = products[i];
-                j++;
-            }
-        }
-
-        return ownedProducts;
     }
 }

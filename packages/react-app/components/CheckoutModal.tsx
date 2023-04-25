@@ -6,7 +6,7 @@ import { Fragment, useState } from "react";
 import { HiShoppingCart } from "react-icons/hi";
 import { CartItem } from "./CartItem";
 
-export default function TestModal() {
+export default function CheckoutModal() {
   const { cartItems, cartQuantity } = useShoppingCart();
   
   const { computers } = useMarketPlace();

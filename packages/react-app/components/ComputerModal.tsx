@@ -6,9 +6,12 @@ import { BigNumber } from "bignumber.js";
 import { CustomWindow } from "@/typings";
 import { useRouter } from "next/navigation";
 import { useMarketPlace } from "@/context/MarketPlaceContext";
+import { ComputerMarketplaceAbi, ComputerMarketplaceContract } from "@/context/constants";
 
 export default function ComputerModal() {
   const { fetchContract } = useMarketPlace();
+
+  const { kit, address } = useCelo();
 
   let [isOpen, setIsOpen] = useState(false);
 
@@ -30,22 +33,11 @@ export default function ComputerModal() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    // creates a new instance of the Web3Provider
-    const provider = new ethers.providers.Web3Provider(
-      (window as CustomWindow).ethereum
-    );
-    await provider.send("eth_requestAccounts", []);
-
-    // Create a signer using the provider
-    const signer = provider.getSigner();
-
-    // Fetch the contract instance
-    const contract = fetchContract(provider);
-
-    // Connect the signer to the contract
-    const contractWithSigner = contract.connect(signer);
-    const account = await signer.getAddress();
+      
+    const contract = new kit.connection.web3.eth.Contract(
+          ComputerMarketplaceAbi as any,
+          ComputerMarketplaceContract
+     );
 
     //Define the transaction parameters
     const params = [
@@ -58,8 +50,7 @@ export default function ComputerModal() {
     ];
 
     try {
-      const tx = await contractWithSigner.writeProduct(...params);
-      await tx.wait();
+       await contract.methods.writeProduct(...params).send({from: address});
       setTitle("");
       setImageUrl("");
       setLocation("");

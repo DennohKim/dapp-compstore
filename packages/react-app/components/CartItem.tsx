@@ -13,8 +13,10 @@ export function CartItem({ id, quantity }: CartItemProps) {
   const { removeFromCart, cartQuantity } = useShoppingCart();
   const { computers, handleClick } = useMarketPlace();
 
+  console.log(cartQuantity)
+
   const item = computers.find((i) => {
-    console.log("computers", i.index);
+    //console.log("computers", i.index);
     return i.index === id;
   });
   
@@ -34,7 +36,7 @@ export function CartItem({ id, quantity }: CartItemProps) {
             <p className="pr-2">Price: </p>
             <div className="text-md">
               {" "}
-              {Number(ethers.utils.formatEther(item.price)) * quantity} CELO
+              {Number(ethers.utils.formatEther(item.price.toString())) * quantity} CELO
             </div>
           </div>
         </div>

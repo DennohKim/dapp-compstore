@@ -2,9 +2,8 @@ import { useShoppingCart } from '@/context/ShoppingCartContext';
 import { Computer } from '@/typings';
 import { ethers } from 'ethers';
 import Image from 'next/image';
-import React from 'react'
 import { IoIosPin } from 'react-icons/io';
-import CheckoutModal from './DetailsModal';
+
 
 const ComputerCard = ({computer}: {computer: Computer}) => {
   const {
@@ -40,7 +39,7 @@ const ComputerCard = ({computer}: {computer: Computer}) => {
             <p className="text-sm"> {computer.store_location}</p>
           </div>
           <div className="font-bold">
-            {ethers.utils.formatEther(computer.price)} CELO
+            {ethers.utils.formatEther(computer.price.toString())} CELO
           </div>
         </div>
         <div className="mt-2">

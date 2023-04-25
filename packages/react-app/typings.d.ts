@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber } from "bignumber.js";
 
 export interface computerAbi {
   inputs: {
@@ -26,7 +26,7 @@ export interface Computer {
   image_url: string;
   computer_specs: string;
   store_location: string;
-  price: string;
+  price: number;
   sold: string;
 }
 
