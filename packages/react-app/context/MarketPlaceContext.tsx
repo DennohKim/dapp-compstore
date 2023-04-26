@@ -179,8 +179,8 @@ export default function MarketPlaceProvider({
       );
 
        const tx = await contract.methods
-         .buyProduct(index)
-         .send({ from: address, value: price });
+         .buyProduct(product.index)
+         .send({ from: address, value: price});
      
       alert(`🎉 You successfully bought "${product.computer_title}".`);
 

@@ -214,6 +214,8 @@ contract ComputerMarketplace {
        Increments the product sold counter for the number of total units sold
     */
 
+   //products[_index].owner.transfer(msg.value);
+
     function buyProduct(uint _index) public payable nonReentrant {
         require(msg.value == products[_index].price);
 
@@ -235,7 +237,7 @@ contract ComputerMarketplace {
             "Celo token transfer failed"
         );
 
-        products[_index].owner.transfer(msg.value);
+        
         products[_index].sold++;
 
         emit ProductSold(
