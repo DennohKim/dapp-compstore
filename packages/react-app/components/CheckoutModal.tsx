@@ -11,6 +11,7 @@ export default function CheckoutModal() {
 
   const { computers } = useMarketPlace();
 
+
   let [isOpen, setIsOpen] = useState(false);
 
   function closeModal() {
@@ -71,7 +72,7 @@ export default function CheckoutModal() {
                     {cartItems.map((item) => (
                       <CartItem key={item.id} {...item} />
                     ))}
-                    
+
                     <div className="ml-auto font-bold text-black text-md mt-4 ">
                       Total{" "}
                       {cartItems.reduce((total, cartItem) => {
@@ -89,9 +90,7 @@ export default function CheckoutModal() {
                     </div>
                   </div>
 
-                  
-
-                  <div className="mt-4">
+                 <div className="mt-4">
                     <button
                       type="button"
                       className="btn inline-flex justify-end rounded-md border border-transparent bg-rose-100 px-4 py-2 text-sm font-medium text-rose-900 hover:bg-rose-200"
