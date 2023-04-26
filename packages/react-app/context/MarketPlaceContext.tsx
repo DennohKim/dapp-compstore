@@ -130,7 +130,7 @@ export default function MarketPlaceProvider({
   // define functions
   async function approvePrice(price: string) {
     if (!address) {
-      alert("Please install the Celo Wallet extension to use this feature.");
+      alert("Please install the Celo Wallet to use this feature.");
       return;
     }
     const celoContract = new kit.connection.web3.eth.Contract(
@@ -144,20 +144,7 @@ export default function MarketPlaceProvider({
     return txObject;
   }
 
-  async function buyProduct(index: number, price: string) {
-    const contract = new kit.connection.web3.eth.Contract(
-      ComputerMarketplaceAbi as any,
-      ComputerMarketplaceContract
-    );
-    try {
-      const tx = await contract.methods
-        .buyProduct(index)
-        .send({ from: address, value: price });
 
-    } catch (error: any) {
-      throw new Error(`Purchase failed: ${error.message}`);
-    }
-  }
 
   // define event handler
   async function handleClick(e: MouseEvent<HTMLButtonElement>) {
@@ -186,7 +173,15 @@ export default function MarketPlaceProvider({
     // process purchase
     alert(`⌛ Processing purchase for "${product.computer_title}"...`);
     try {
-      await buyProduct(index, price);
+      const contract = new kit.connection.web3.eth.Contract(
+        ComputerMarketplaceAbi as any,
+        ComputerMarketplaceContract
+      );
+
+       const tx = await contract.methods
+         .buyProduct(index)
+         .send({ from: address, value: price });
+     
       alert(`🎉 You successfully bought "${product.computer_title}".`);
 
       removeFromCart(product.index);
