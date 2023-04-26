@@ -8,7 +8,7 @@ import { CartItem } from "./CartItem";
 
 export default function CheckoutModal() {
   const { cartItems, cartQuantity } = useShoppingCart();
-  
+
   const { computers } = useMarketPlace();
 
   let [isOpen, setIsOpen] = useState(false);
@@ -71,6 +71,7 @@ export default function CheckoutModal() {
                     {cartItems.map((item) => (
                       <CartItem key={item.id} {...item} />
                     ))}
+                    
                     <div className="ml-auto font-bold text-black text-md mt-4 ">
                       Total{" "}
                       {cartItems.reduce((total, cartItem) => {
@@ -87,6 +88,8 @@ export default function CheckoutModal() {
                       <span className="pl-2">CELO</span>
                     </div>
                   </div>
+
+                  
 
                   <div className="mt-4">
                     <button

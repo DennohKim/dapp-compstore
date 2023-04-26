@@ -7,7 +7,6 @@ import { ComputerMarketplaceAbi, ComputerMarketplaceContract } from "@/context/c
 
 export default function ComputerModal() {
  
-
   const { kit, address } = useCelo();
 
   let [isOpen, setIsOpen] = useState(false);

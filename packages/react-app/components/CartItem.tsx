@@ -1,4 +1,3 @@
-import { Computer } from "@/typings";
 import Image from "next/image";
 import { useShoppingCart } from "../context/ShoppingCartContext";
 import { ethers } from "ethers";
@@ -36,7 +35,9 @@ export function CartItem({ id, quantity }: CartItemProps) {
             <p className="pr-2">Price: </p>
             <div className="text-md">
               {" "}
-              {Number(ethers.utils.formatEther(item.price.toString())) * quantity} CELO
+              {Number(ethers.utils.formatEther(item.price.toString())) *
+                quantity}{" "}
+              CELO
             </div>
           </div>
         </div>
@@ -50,15 +51,21 @@ export function CartItem({ id, quantity }: CartItemProps) {
         </div>
       </div>
 
-      {cartQuantity > 0 && (
+      {cartQuantity > 0 ? (
         <button
           className="inline-flex content-center place-items-center rounded-full border border-[#250438] bg-[#250438] py-2 px-5 text-md font-medium text-snow hover:bg-[#8e24cc] buyBtn"
           onClick={handleClick}
           data-index={item.index}
         >
-          Buy Computer
+          Buy {cartQuantity} Computer{cartQuantity> 1 && "s"}
         </button>
+      ) : (
+        <p>
+          Your cart is empty. <br /> Add some computers to your cart.
+        </p>
       )}
     </div>
   );
 }
+
+

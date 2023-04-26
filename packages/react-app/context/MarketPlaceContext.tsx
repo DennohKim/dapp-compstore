@@ -1,6 +1,5 @@
-import { Computer, CustomWindow } from "@/typings";
+import { Computer } from "@/typings";
 import { useCelo } from "@celo/react-celo";
-import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
 import { useRouter } from "next/navigation";
 import {
@@ -24,9 +23,6 @@ type MarketPlaceProviderProps = {
 
 type MarketPlaceContextType = {
   getProducts: () => Promise<Computer[]>;
-  fetchContract: (
-    signerOrProvider: ethers.Signer | ethers.providers.Provider
-  ) => ethers.Contract;
   computers: Computer[];
   myProducts: Computer[];
   handleClick: (e: MouseEvent<HTMLButtonElement>) => void;
@@ -49,19 +45,10 @@ export default function MarketPlaceProvider({
   const { kit, address } = useCelo();
   const [computers, setComputers] = useState<Computer[]>([]);
   const [myProducts, setMyProducts] = useState<Computer[]>([]);
-  const { cartQuantity, removeFromCart } = useShoppingCart();
+  const { cartQuantity, cartItems, removeFromCart } = useShoppingCart();
 
   const router = useRouter();
 
-  const fetchContract = useCallback(
-    (signerOrProvider: ethers.Signer | ethers.providers.Provider) =>
-      new ethers.Contract(
-        ComputerMarketplaceContract,
-        ComputerMarketplaceAbi,
-        signerOrProvider
-      ),
-    []
-  );
 
   const getProducts = useCallback(
     async function (): Promise<Computer[]> {
@@ -154,20 +141,31 @@ export default function MarketPlaceProvider({
     const index: number = parseInt(target.getAttribute("data-index")!);
     const product: Computer = computers[index];
 
+    
+    const cartItemsPrice = cartItems.reduce((total, cartItem) => {
+         const item = computers.find((i: any) => i.index === cartItem.id);
+         const itemPrice = item ? ethers.utils.formatEther(item.price) : "0";
+         return total + parseFloat(itemPrice) * cartItem.quantity;
+    }, 0);
 
-    const number = parseInt(product.price);
-    const convertedPrice = number * cartQuantity;
-    const price = String(convertedPrice);
+    console.log("cartItemsPrice", cartItemsPrice);
+    
+
+    // const number = parseInt(product.price);
+    // const convertedPrice = number * cartQuantity;
+    // const price = String(convertedPrice);
+    const price = ethers.utils.parseEther(cartItemsPrice.toString());
+    const itemPrice = String(price);
 
     try {
-      await approvePrice(price);
+      await approvePrice(itemPrice);
     } catch (error: any) {
       alert(`⚠️ ${error.message}`);
       return;
     }
 
     // prompt user to confirm purchase
-    const confirmMsg: string = `Are you sure you want to buy "${product.computer_title}" for ${price} CELO?`;
+    const confirmMsg: string = `Are you sure you want to buy "${product.computer_title}" for ${itemPrice} CELO?`;
     if (!confirm(confirmMsg)) return;
 
     // process purchase
@@ -180,7 +178,7 @@ export default function MarketPlaceProvider({
 
        const tx = await contract.methods
          .buyProduct(product.index)
-         .send({ from: address, value: price});
+         .send({ from: address, value: itemPrice });
      
       alert(`🎉 You successfully bought "${product.computer_title}".`);
 
@@ -218,7 +216,6 @@ export default function MarketPlaceProvider({
     <MarketPlaceContext.Provider
       value={{
         getProducts,
-        fetchContract,
         handleClick,
         computers,
         myProducts,
