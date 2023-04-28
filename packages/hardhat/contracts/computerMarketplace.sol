@@ -33,11 +33,11 @@ Beginning of contract
 */
 contract ComputerMarketplace {
     uint internal productsLength = 0;
-    // address internal cUsdTokenAddress = 0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1;
-    address internal celoTokenAddress =
+    // address internal immutable cUsdTokenAddress = 0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1;
+    address internal immutable i_celoTokenAddress =
         0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9;
 
-    address owner = msg.sender;
+    address private immutable i_owner = msg.sender;
 
     /*
     Product template struct
@@ -67,7 +67,7 @@ contract ComputerMarketplace {
         locked = false;
     }
     modifier Onlyowner() {
-        require(msg.sender == owner);
+        require(msg.sender == i_owner);
         _;
     }
 
@@ -218,7 +218,7 @@ contract ComputerMarketplace {
     function buyProduct(uint _index) public payable nonReentrant {
         require(msg.value == products[_index].price);
 
-        uint allowance = IERC20Token(celoTokenAddress).allowance(
+        uint allowance = IERC20Token(i_celoTokenAddress).allowance(
             msg.sender,
             address(this)
         );
@@ -228,7 +228,7 @@ contract ComputerMarketplace {
         );
 
         require(
-            IERC20Token(celoTokenAddress).transferFrom(
+            IERC20Token(i_celoTokenAddress).transferFrom(
                 msg.sender,
                 products[_index].owner,
                 products[_index].price
@@ -285,7 +285,7 @@ contract ComputerMarketplace {
         );
 
         // Delete the product at the specified index
-        for (uint i = _index; i < productsLength - 1; i++) {
+        for (uint i = _index; i < productsLength - 1; ++i) {
             products[i] = products[i + 1];
         }
         delete products[productsLength - 1];
