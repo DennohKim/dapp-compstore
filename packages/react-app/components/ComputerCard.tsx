@@ -18,7 +18,7 @@ const ComputerCard = ({computer}: {computer: Computer}) => {
   return (
     <div className="group flex flex-col space-y-6">
       <div className="aspect-square w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-w-7 xl:aspect-h-8">
-        <Image
+        <img
           width="300"
           height="300"
           src={computer.image_url}

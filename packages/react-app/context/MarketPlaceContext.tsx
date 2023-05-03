@@ -141,19 +141,12 @@ export default function MarketPlaceProvider({
     const index: number = parseInt(target.getAttribute("data-index")!);
     const product: Computer = computers[index];
 
-    
     const cartItemsPrice = cartItems.reduce((total, cartItem) => {
-         const item = computers.find((i: any) => i.index === cartItem.id);
-         const itemPrice = item ? ethers.utils.formatEther(item.price) : "0";
-         return total + parseFloat(itemPrice) * cartItem.quantity;
+      const item = computers.find((i: any) => i.index === cartItem.id);
+      const itemPrice = item ? ethers.utils.formatEther(item.price) : "0";
+      return total + parseFloat(itemPrice) * cartItem.quantity;
     }, 0);
 
-    console.log("cartItemsPrice", cartItemsPrice);
-    
-
-    // const number = parseInt(product.price);
-    // const convertedPrice = number * cartQuantity;
-    // const price = String(convertedPrice);
     const price = ethers.utils.parseEther(cartItemsPrice.toString());
     const itemPrice = String(price);
 
@@ -176,10 +169,10 @@ export default function MarketPlaceProvider({
         ComputerMarketplaceContract
       );
 
-       const tx = await contract.methods
-         .buyProduct(product.index)
-         .send({ from: address, value: itemPrice });
-     
+      const tx = await contract.methods
+        .buyProduct(product.index)
+        .send({ from: address, value: itemPrice });
+
       alert(`🎉 You successfully bought "${product.computer_title}".`);
 
       removeFromCart(product.index);
