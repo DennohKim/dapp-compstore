@@ -25,7 +25,7 @@ type MarketPlaceContextType = {
   getProducts: () => Promise<Computer[]>;
   computers: Computer[];
   myProducts: Computer[];
-  handleClick: (e: MouseEvent<HTMLButtonElement>) => void;
+  handlePurchase: (e: MouseEvent<HTMLButtonElement>) => void;
   deleteProduct: (index: number) => void;
 };
 
@@ -48,7 +48,6 @@ export default function MarketPlaceProvider({
   const { cartQuantity, cartItems, removeFromCart } = useShoppingCart();
 
   const router = useRouter();
-
 
   const getProducts = useCallback(
     async function (): Promise<Computer[]> {
@@ -131,57 +130,56 @@ export default function MarketPlaceProvider({
     return txObject;
   }
 
+async function handlePurchase(e: MouseEvent<HTMLButtonElement>) {
+  const target = e.target as HTMLDivElement;
+  if (!target.classList.contains("buyBtn")) return;
 
+  const index: number = parseInt(target.getAttribute("data-index")!);
+  const product: Computer = computers[index];
 
-  // define event handler
-  async function handleClick(e: MouseEvent<HTMLButtonElement>) {
-    const target = e.target as HTMLDivElement;
-    if (!target.classList.contains("buyBtn")) return;
+  const totalPrice = cartItems.reduce((total, cartItem) => {
+    const item = computers.find((i: any) => i.index === cartItem.id);
+    const itemPrice = item ? ethers.utils.formatEther(item.price) : "0";
+    const quantity = cartItem.quantity;
+    const itemTotalPrice = parseFloat(itemPrice) * quantity;
+    return total + itemTotalPrice;
+  }, 0);
 
-    const index: number = parseInt(target.getAttribute("data-index")!);
-    const product: Computer = computers[index];
+  const price = ethers.utils.parseEther(totalPrice.toString());
+  const itemsPrice = String(price);
+  console.log(itemsPrice)
 
-    const cartItemsPrice = cartItems.reduce((total, cartItem) => {
-      const item = computers.find((i: any) => i.index === cartItem.id);
-      const itemPrice = item ? ethers.utils.formatEther(item.price) : "0";
-      return total + parseFloat(itemPrice) * cartItem.quantity;
-    }, 0);
-
-    const price = ethers.utils.parseEther(cartItemsPrice.toString());
-    const itemPrice = String(price);
-
-    try {
-      await approvePrice(itemPrice);
-    } catch (error: any) {
-      alert(`⚠️ ${error.message}`);
-      return;
-    }
-
-    // prompt user to confirm purchase
-    const confirmMsg: string = `Are you sure you want to buy "${product.computer_title}" for ${itemPrice} CELO?`;
-    if (!confirm(confirmMsg)) return;
-
-    // process purchase
-    alert(`⌛ Processing purchase for "${product.computer_title}"...`);
-    try {
-      const contract = new kit.connection.web3.eth.Contract(
-        ComputerMarketplaceAbi as any,
-        ComputerMarketplaceContract
-      );
-
-      const tx = await contract.methods
-        .buyProduct(product.index)
-        .send({ from: address, value: itemPrice });
-
-      alert(`🎉 You successfully bought "${product.computer_title}".`);
-
-      removeFromCart(product.index);
-      getProducts();
-    } catch (error: any) {
-      alert(`⚠️ ${error.message}`);
-    }
+  try {
+    await approvePrice(itemsPrice);
+  } catch (error: any) {
+    alert(`⚠️ ${error.message}`);
+    return;
   }
 
+  // prompt user to confirm purchase
+  const confirmMsg: string = `Are you sure you want to buy "${product.computer_title}" for ${itemsPrice} CELO?`;
+  if (!confirm(confirmMsg)) return;
+
+  // process purchase
+  alert(`⌛ Processing purchase for "${product.computer_title}"...`);
+  try {
+    const contract = new kit.connection.web3.eth.Contract(
+      ComputerMarketplaceAbi as any,
+      ComputerMarketplaceContract
+    );
+
+    const tx = await contract.methods
+      .buyProduct(product.index, cartQuantity)
+      .send({ from: address, value: itemsPrice });
+
+    alert(`🎉 You successfully bought "${product.computer_title}".`);
+
+    removeFromCart(product.index);
+    getProducts();
+  } catch (error: any) {
+    alert(`⚠️ ${error.message}`);
+  }
+}
 
 
   async function deleteProduct(index: number) {
@@ -209,7 +207,7 @@ export default function MarketPlaceProvider({
     <MarketPlaceContext.Provider
       value={{
         getProducts,
-        handleClick,
+        handlePurchase,
         computers,
         myProducts,
         deleteProduct,

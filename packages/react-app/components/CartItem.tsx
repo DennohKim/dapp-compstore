@@ -10,7 +10,7 @@ type CartItemProps = {
 
 export function CartItem({ id, quantity }: CartItemProps) {
   const { removeFromCart, cartQuantity } = useShoppingCart();
-  const { computers, handleClick } = useMarketPlace();
+  const { computers, handlePurchase } = useMarketPlace();
 
   console.log(cartQuantity)
 
@@ -54,7 +54,7 @@ export function CartItem({ id, quantity }: CartItemProps) {
       {cartQuantity > 0 ? (
         <button
           className="inline-flex content-center place-items-center rounded-full border border-[#250438] bg-[#250438] py-2 px-5 text-md font-medium text-snow hover:bg-[#8e24cc] buyBtn"
-          onClick={handleClick}
+          onClick={handlePurchase}
           data-index={item.index}
         >
           Buy {cartQuantity} Computer{cartQuantity> 1 && "s"}
