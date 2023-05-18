@@ -8,7 +8,7 @@ import { useContext } from "react";
 import { useMarketPlace } from "@/context/MarketPlaceContext";
 
 export default function DetailsModal({ computer }: { computer: Computer }) {
-  const { handleClick } =useMarketPlace();
+  const { handlePurchase } =useMarketPlace();
 
   const value = ethers.utils.formatEther(computer.sold);
 
